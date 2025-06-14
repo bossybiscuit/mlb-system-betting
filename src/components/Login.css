@@ -86,6 +86,11 @@
   background-color: #1976d2;
 }
 
+.login-button.active {
+  background-color: #1976d2;
+  transform: translateY(1px);
+}
+
 .signup-button {
   background-color: #424242;
   color: #e0e0e0;
@@ -93,6 +98,11 @@
 
 .signup-button:hover {
   background-color: #616161;
+}
+
+.signup-button.active {
+  background-color: #616161;
+  transform: translateY(1px);
 }
 
 @media (max-width: 480px) {
