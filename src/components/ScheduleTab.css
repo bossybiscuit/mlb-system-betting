@@ -1,0 +1,414 @@
+/* Schedule Tab Styles - Hybrid Mode */
+
+/* ------ Dark Mode for Container ------ */
+.schedule-tab {
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+    color: #e0e0e0;
+}
+
+/* ------ Schedule Controls (Dark) ------ */
+.schedule-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background-color: #333333;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #555;
+}
+
+.date-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.date-selector label {
+    color: #e0e0e0;
+    font-weight: bold;
+}
+
+.date-selector input {
+    padding: 8px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #444;
+    color: #e0e0e0;
+}
+
+.date-selector input:focus {
+    outline: none;
+    border-color: #4a66f5;
+}
+
+.refresh-button {
+    padding: 8px 16px;
+    background-color: #4a66f5;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.refresh-button:hover {
+    background-color: #3a56e5;
+}
+
+/* ------ Loading/No Games States (Dark) ------ */
+.loading,
+.no-games {
+    background-color: #333333;
+    padding: 20px;
+    text-align: center;
+    border-radius: 5px;
+    margin: 20px 0;
+    color: #b0b0b0;
+}
+
+/* ------ Schedule Content ------ */
+.schedule-content h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #e0e0e0;
+    border-bottom: 2px solid #2196f3;
+    padding-bottom: 10px;
+}
+
+.game-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+/* ------ Game Cards (Light Mode) ------ */
+.game-card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    transition: transform 0.2s, box-shadow 0.2s;
+    color: #333;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Blue border for cards with betting strategies */
+.game-card.has-strategy {
+    border: 2px solid #2196f3;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+}
+
+/* ------ Card Header ------ */
+.game-header {
+    background-color: #f5f5f5;
+    padding: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.game-time-status {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Strategy indicators moved to header right */
+.strategy-indicators {
+    display: flex;
+    gap: 5px;
+}
+
+.strategy-icon {
+    font-size: 16px;
+    cursor: help;
+}
+
+.strategy-icon.travel-advantage {
+    color: #2196f3;
+}
+
+.strategy-icon.fade-sweep {
+    color: #9c27b0;
+}
+
+.strategy-icon.fade-rockies {
+    color: #ff9800;
+}
+
+/* ------ Matchup Section ------ */
+.matchup {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background-color: white;
+}
+
+.teams {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 10px;
+}
+
+.team-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.team-logo {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.team-name {
+    font-size: 14px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.versus {
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0 5px;
+    color: #333;
+}
+
+/* ------ Card Footer ------ */
+.game-footer {
+    background-color: #f5f5f5;
+    padding: 8px 12px 10px 12px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+}
+
+.venue {
+    color: #666;
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+/* ------ Team Colors ------ */
+.team-name.team-110 {
+    color: #df4601;
+}
+
+/* Baltimore Orioles */
+.team-name.team-111 {
+    color: #bd3039;
+}
+
+/* Boston Red Sox */
+.team-name.team-147 {
+    color: #003087;
+}
+
+/* New York Yankees */
+.team-name.team-139 {
+    color: #092c5c;
+}
+
+/* Tampa Bay Rays */
+.team-name.team-141 {
+    color: #134a8e;
+}
+
+/* Toronto Blue Jays */
+.team-name.team-145 {
+    color: #27251f;
+}
+
+/* Chicago White Sox */
+.team-name.team-114 {
+    color: #e31937;
+}
+
+/* Cleveland Guardians */
+.team-name.team-116 {
+    color: #0c2340;
+}
+
+/* Detroit Tigers */
+.team-name.team-118 {
+    color: #004687;
+}
+
+/* Kansas City Royals */
+.team-name.team-142 {
+    color: #002b5c;
+}
+
+/* Minnesota Twins */
+.team-name.team-117 {
+    color: #eb6e1f;
+}
+
+/* Houston Astros */
+.team-name.team-108 {
+    color: #ba0021;
+}
+
+/* Los Angeles Angels */
+.team-name.team-133 {
+    color: #003831;
+}
+
+/* Oakland Athletics */
+.team-name.team-136 {
+    color: #0c2c56;
+}
+
+/* Seattle Mariners */
+.team-name.team-140 {
+    color: #c0111f;
+}
+
+/* Texas Rangers */
+.team-name.team-144 {
+    color: #ce1141;
+}
+
+/* Atlanta Braves */
+.team-name.team-146 {
+    color: #00a3e0;
+}
+
+/* Miami Marlins */
+.team-name.team-121 {
+    color: #ff5910;
+}
+
+/* New York Mets */
+.team-name.team-143 {
+    color: #e81828;
+}
+
+/* Philadelphia Phillies */
+.team-name.team-120 {
+    color: #ab0003;
+}
+
+/* Washington Nationals */
+.team-name.team-112 {
+    color: #0e3386;
+}
+
+/* Chicago Cubs */
+.team-name.team-113 {
+    color: #c6011f;
+}
+
+/* Cincinnati Reds */
+.team-name.team-158 {
+    color: #12284b;
+}
+
+/* Milwaukee Brewers */
+.team-name.team-134 {
+    color: #27251f;
+}
+
+/* Pittsburgh Pirates */
+.team-name.team-138 {
+    color: #c41e3a;
+}
+
+/* St. Louis Cardinals */
+.team-name.team-109 {
+    color: #a71930;
+}
+
+/* Arizona Diamondbacks */
+.team-name.team-115 {
+    color: #33006f;
+}
+
+/* Colorado Rockies */
+.team-name.team-119 {
+    color: #005a9c;
+}
+
+/* Los Angeles Dodgers */
+.team-name.team-135 {
+    color: #2f241d;
+}
+
+/* San Diego Padres */
+.team-name.team-137 {
+    color: #fd5a1e;
+}
+
+/* San Francisco Giants */
+
+/* ------ Responsive Design ------ */
+@media (max-width: 768px) {
+    .schedule-controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .date-selector {
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+    }
+
+    .team-logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .game-list {
+        grid-template-columns: 1fr;
+    }
+
+    .game-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .strategy-indicators {
+        align-self: flex-end;
+    }
+}
+
+@media (max-width: 480px) {
+    .schedule-tab {
+        padding: 15px;
+    }
+
+    .schedule-controls {
+        padding: 12px;
+    }
+
+    .team-column {
+        gap: 6px;
+    }
+
+    .team-name {
+        font-size: 13px;
+    }
+
+    .versus {
+        font-size: 14px;
+    }
+}

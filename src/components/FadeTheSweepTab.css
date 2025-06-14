@@ -1,0 +1,421 @@
+/* Fade The Sweep Tab Styles - Hybrid Mode */
+
+/* ------ Dark Mode for Container ------ */
+.fade-the-sweep-tab {
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+    color: #e0e0e0;
+    font-family: Arial, sans-serif;
+}
+
+.fade-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.fade-header h1 {
+    margin: 0;
+    color: #e0e0e0;
+    font-size: 1.5rem;
+}
+
+.fade-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.refresh-button,
+.toggle-button {
+    padding: 8px 16px;
+    background-color: #4a66f5;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.refresh-button:hover,
+.toggle-button:hover {
+    background-color: #3a56e5;
+}
+
+/* ------ Description (Dark) ------ */
+.fade-description {
+    background-color: #333333;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #b0b0b0;
+    border: 1px solid #555;
+}
+
+/* ------ Loading/Error States (Dark) ------ */
+.loading,
+.error,
+.no-opportunities {
+    background-color: #333333;
+    padding: 20px;
+    text-align: center;
+    border-radius: 5px;
+    margin: 20px 0;
+    color: #b0b0b0;
+}
+
+.error {
+    color: #f44336;
+    background-color: rgba(244, 67, 54, 0.1);
+    border: 1px solid #f44336;
+}
+
+/* ------ Section Headers (Dark) ------ */
+.fade-opportunities h2,
+.historical-results h2 {
+    color: #e0e0e0;
+    border-bottom: 2px solid #2196f3;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.historical-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.historical-header h2 {
+    margin: 0;
+    color: #e0e0e0;
+}
+
+.season-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.season-selector label {
+    font-weight: bold;
+    color: #e0e0e0;
+}
+
+.season-dropdown {
+    padding: 8px 12px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #333;
+    color: #e0e0e0;
+    font-size: 14px;
+    min-width: 100px;
+    cursor: pointer;
+}
+
+.season-dropdown:hover {
+    border-color: #4a66f5;
+}
+
+.season-dropdown:focus {
+    outline: none;
+    border-color: #4a66f5;
+    box-shadow: 0 0 0 2px rgba(74, 102, 245, 0.2);
+}
+
+/* ------ Card Lists ------ */
+.opportunities-list,
+.historical-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    margin-top: 15px;
+}
+
+/* ------ Cards (Light Mode) ------ */
+.opportunity-card,
+.historical-card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    transition: transform 0.2s, box-shadow 0.2s;
+    color: #333;
+}
+
+.opportunity-card:hover,
+.historical-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ------ Card Headers ------ */
+.opportunity-header,
+.historical-header {
+    background-color: #f5f5f5;
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.matchup {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 0;
+    flex-basis: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.home-team {
+    color: #002D72;
+    /* MLB blue */
+}
+
+.away-team {
+    color: #D50032;
+    /* MLB red */
+}
+
+.game-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+    flex-basis: 100%;
+}
+
+.series-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+    flex-basis: 50%;
+}
+
+.status {
+    font-weight: bold;
+    color: #333;
+}
+
+.result-tag {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    margin-left: auto;
+}
+
+.sweep-prevented .result-tag {
+    background-color: #4caf50;
+}
+
+.sweep-completed .result-tag {
+    background-color: #f44336;
+}
+
+/* ------ Card Content ------ */
+.opportunity-details,
+.historical-details {
+    padding: 15px;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.5;
+    flex-grow: 1;
+}
+
+.team-to-fade,
+.team-result {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.previous-games {
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.previous-game {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 13px;
+}
+
+.previous-result {
+    color: #d32f2f;
+    font-weight: bold;
+}
+
+/* ------ Card Footers ------ */
+.historical-footer {
+    background-color: #f5f5f5;
+    padding: 8px 15px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 13px;
+    color: #666;
+}
+
+/* ------ Win/Loss Styling ------ */
+.historical-card.sweep-prevented {
+    border-left: 4px solid #4caf50;
+}
+
+.historical-card.sweep-completed {
+    border-left: 4px solid #f44336;
+}
+
+/* ------ Stats Container ------ */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin: 15px 0 25px 0;
+    width: 100%;
+}
+
+.stat-box {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* ------ Betting Stats ------ */
+.betting-stat .stat-value {
+    font-weight: bold;
+}
+
+.stat-value[style*="color: #2e7d32"] {
+    color: #2e7d32 !important;
+}
+
+.stat-value[style*="color: #c62828"] {
+    color: #c62828 !important;
+}
+
+.betting-info {
+    margin-top: 12px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    font-size: 13px;
+}
+
+.betting-detail {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 80px;
+}
+
+.bet-label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 3px;
+    font-size: 12px;
+}
+
+.bet-value {
+    font-size: 14px;
+}
+
+.bet-value.win {
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+.bet-value.loss {
+    color: #c62828;
+    font-weight: bold;
+}
+
+/* ------ Loading Historical ------ */
+.loading-historical {
+    text-align: center;
+    padding: 20px;
+    background-color: #333333;
+    border-radius: 5px;
+    color: #b0b0b0;
+    font-style: italic;
+}
+
+/* ------ Responsive Design ------ */
+@media (max-width: 768px) {
+    .fade-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .fade-actions {
+        margin-top: 10px;
+    }
+
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .opportunities-list,
+    .historical-list {
+        grid-template-columns: 1fr;
+    }
+
+    .historical-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .fade-the-sweep-tab {
+        padding: 15px;
+    }
+
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
+
+    .historical-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}

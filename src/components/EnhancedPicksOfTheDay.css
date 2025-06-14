@@ -1,0 +1,428 @@
+/* Enhanced Picks Styles - Hybrid Mode */
+
+/* ------ Dark Mode for Container/Tabs ------ */
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+.picks-of-the-day {
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.picks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.picks-header h2 {
+    margin: 0;
+    color: #e0e0e0;
+}
+
+/* ------ Main Layout Styles ------ */
+.picks-columns-container {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+}
+
+.pick-column {
+    flex: 1;
+    min-width: 0;
+}
+
+/* ------ Column Heading Styles (Dark) ------ */
+.pick-column h3 {
+    border-bottom: 2px solid #2196f3;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #e0e0e0;
+}
+
+/* ------ Button Styles ------ */
+.refresh-button {
+    padding: 8px 16px;
+    background-color: #4a66f5;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.refresh-button:hover {
+    background-color: #3a56e5;
+}
+
+/* Copy Message button */
+.copy-button {
+    margin-right: 10px;
+    background-color: #4CAF50;
+}
+
+.copy-button:hover {
+    background-color: #3d8b40;
+}
+
+/* ------ Card Styles (Light Mode) ------ */
+.pick-card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 100%;
+}
+
+.pick-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.pick-card.expanded {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pick-card.has-strategy {
+    border: 2px solid #2196f3;
+}
+
+/* ------ Card Header Styles ------ */
+.pick-header {
+    background-color: #f5f5f5;
+    padding: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Pick recommendation in top left (replacing confidence) */
+.game-time-status {
+    display: flex;
+    align-items: center;
+}
+
+.recommended-bet-highlight-header {
+    background-color: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #0d47a1;
+}
+
+.recommended-bet-highlight-header strong {
+    color: #1976d2;
+    margin-right: 3px;
+}
+
+.strategy-icon {
+    font-size: 18px;
+    cursor: help;
+}
+
+.strategy-icon.travel-advantage {
+    color: #2196f3;
+}
+
+.strategy-icon.fade-sweep {
+    color: #9c27b0;
+}
+
+.strategy-icon.fade-rockies {
+    color: #ff9800;
+}
+
+/* ------ Team Matchup Styles ------ */
+.matchup {
+    padding: 15px 10px;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #eee;
+    font-weight: bold;
+}
+
+.matchup .teams {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.team-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 90px;
+}
+
+.team-logo {
+    width: 40px;
+    height: 40px;
+    display: block;
+    margin: 0 auto 5px;
+}
+
+.versus {
+    font-weight: bold;
+    font-size: 1rem;
+    margin: 0 5px;
+}
+
+/* Team colors (can be overridden with inline styles) */
+.away-team {
+    color: #D50032;
+    /* MLB red */
+}
+
+.home-team {
+    color: #002D72;
+    /* MLB blue */
+}
+
+/* Team travel labels */
+.team-travel-label {
+    font-size: 12px;
+    color: #666;
+    font-weight: normal;
+    margin-top: 2px;
+}
+
+/* ------ Card Details Styles ------ */
+.pick-details {
+    padding: 15px;
+    color: #333;
+    /* Ensure text is dark in the light mode cards */
+}
+
+/* Clean up old pick-centered styles since we moved it to the header */
+.recommended-bet-container,
+.recommended-bet-highlight {
+    display: none;
+}
+
+.reason {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+/* Toggle button */
+.detail-toggle-button {
+    background-color: #f0f2f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    text-align: center;
+    transition: background-color 0.2s ease;
+    color: #333;
+}
+
+.detail-toggle-button:hover {
+    background-color: #e0e0e0;
+}
+
+/* ------ Expanded Details Styles ------ */
+.expanded-details {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Analysis sections */
+.travel-analysis,
+.sweep-analysis,
+.rockies-analysis {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 4px solid #2196f3;
+}
+
+.sweep-analysis {
+    border-left-color: #9c27b0;
+}
+
+.rockies-analysis {
+    border-left-color: #ff9800;
+}
+
+.travel-analysis h4,
+.sweep-analysis h4,
+.rockies-analysis h4 {
+    margin-top: 0;
+    color: #333;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.travel-analysis p,
+.sweep-analysis p,
+.rockies-analysis p {
+    margin-bottom: 15px;
+    line-height: 1.5;
+    color: #444;
+}
+
+/* Travel type record comparison */
+.travel-type-comparison {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: center;
+    color: #333;
+}
+
+.sweep-stats,
+.rockies-context {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+/* Stats comparison */
+.stats-comparison {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    gap: 15px;
+}
+
+.stat-column {
+    flex: 1;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.stat-column h5 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.stat-label {
+    color: #666;
+}
+
+.stat-value {
+    font-weight: 300;
+    font-size: medium;
+}
+
+.stat-value.positive {
+    color: #2e7d32;
+}
+
+.stat-value.negative {
+    color: #c62828;
+}
+
+/* ------ Card Footer Styles ------ */
+.pick-footer {
+    background-color: #f5f5f5;
+    padding: 8px 12px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.game-time {
+    font-weight: bold;
+    color: #555;
+}
+
+.venue {
+    color: #666;
+    font-style: italic;
+}
+
+/* ------ State Styles (Dark for Empty State) ------ */
+.no-picks {
+    background-color: #333333;
+    padding: 15px;
+    text-align: center;
+    border-radius: 5px;
+    border: 1px dashed #555;
+    color: #b0b0b0;
+}
+
+.loading {
+    padding: 20px;
+    text-align: center;
+    background-color: #333333;
+    border-radius: 5px;
+    margin: 20px 0;
+    font-style: italic;
+    color: #b0b0b0;
+}
+
+/* ------ Responsive Styles ------ */
+@media (max-width: 768px) {
+    .picks-columns-container {
+        flex-direction: column;
+    }
+
+    .pick-column {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .stats-comparison {
+        flex-direction: column;
+    }
+
+    .stat-column {
+        margin-bottom: 10px;
+    }
+}
