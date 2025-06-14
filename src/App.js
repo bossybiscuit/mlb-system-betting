@@ -1122,14 +1122,21 @@ function App() {
     publicKey: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY
   };
 
-  // Enhanced debug logging
+  // Enhanced debug logging with more details
   useEffect(() => {
-    console.log('Memberstack Configuration:', {
-      hasPublicKey: !!process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY,
-      publicKeyLength: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY?.length,
-      publicKeyPrefix: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY?.substring(0, 10) + '...',
-      environment: process.env.NODE_ENV,
-      allEnvKeys: Object.keys(process.env).filter(key => key.startsWith('REACT_APP_'))
+    const envVars = Object.keys(process.env)
+      .filter(key => key.startsWith('REACT_APP_'))
+      .reduce((acc, key) => {
+        acc[key] = process.env[key] ? 'Set' : 'Not Set';
+        return acc;
+      }, {});
+
+    console.log('Environment Variables Status:', {
+      ...envVars,
+      NODE_ENV: process.env.NODE_ENV,
+      hasMemberstackKey: !!process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY,
+      memberstackKeyLength: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY?.length || 0,
+      memberstackKeyPrefix: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY?.substring(0, 10) || 'Not Set'
     });
   }, []);
 
