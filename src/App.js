@@ -1117,30 +1117,31 @@ function MainApp() {
 
 // Main App component with routing
 function App() {
-  // Added environment variable check for Memberstack public key
+  // Using Memberstack public key for authentication
   const memberstack = {
     publicKey: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY
   };
 
-  // Enhanced debug logging with more details
+  // Enhanced debug logging with specific Memberstack checks
   useEffect(() => {
-    const envVars = Object.keys(process.env)
-      .filter(key => key.startsWith('REACT_APP_'))
-      .reduce((acc, key) => {
-        acc[key] = process.env[key] ? 'Set' : 'Not Set';
-        return acc;
-      }, {});
-
-    console.log('Environment Variables Status:', {
-      ...envVars,
-      NODE_ENV: process.env.NODE_ENV,
-      hasMemberstackKey: !!process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY,
-      memberstackKeyLength: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY?.length || 0,
-      memberstackKeyPrefix: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY?.substring(0, 10) || 'Not Set'
+    const memberstackKey = process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY;
+    console.log('Memberstack Key Check:', {
+      exists: !!memberstackKey,
+      length: memberstackKey?.length || 0,
+      prefix: memberstackKey?.substring(0, 5) || 'none',
+      fullKey: memberstackKey || 'not set',
+      environment: process.env.NODE_ENV,
+      isProduction: process.env.NODE_ENV === 'production',
+      allEnvVars: Object.keys(process.env)
+        .filter(key => key.startsWith('REACT_APP_'))
+        .reduce((acc, key) => {
+          acc[key] = process.env[key] ? 'Set' : 'Not Set';
+          return acc;
+        }, {})
     });
   }, []);
 
-  // If no public key, show error message
+  // If no public key, show error message with more details
   if (!process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY) {
     return (
       <div style={{ 
@@ -1156,7 +1157,9 @@ function App() {
         <p>Memberstack public key is not configured. Please check your environment variables.</p>
         <p>Expected: REACT_APP_MEMBERSTACK_PUBLIC_KEY</p>
         <p>Current environment: {process.env.NODE_ENV}</p>
+        <p>Key format expected: pk_sb_...</p>
         <p>Available environment variables: {Object.keys(process.env).filter(key => key.startsWith('REACT_APP_')).join(', ')}</p>
+        <p>Please verify in Vercel dashboard that the key is set for all environments (Production, Preview, and Development)</p>
       </div>
     );
   }
