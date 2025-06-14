@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@memberstack/react": "^2.0.30",
+    "react-router-dom": "^7.6.2"
+  }
+}
