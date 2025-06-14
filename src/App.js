@@ -16,6 +16,7 @@ import './components/EnhancedPicksOfTheDay.css';
 import PitchingOutsPredictor from './components/PitchingOutsPredictor';
 import { MemberstackProvider, useMemberstack } from '@memberstack/react';
 import Login from './components/Login';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Create a wrapper component for the main app content
 function MainApp() {
