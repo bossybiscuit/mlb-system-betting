@@ -1117,6 +1117,7 @@ function MainApp() {
 
 // Main App component with routing
 function App() {
+  // Added environment variable check for Memberstack public key
   const memberstack = {
     publicKey: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY
   };
