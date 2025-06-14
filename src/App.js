@@ -1139,6 +1139,26 @@ function App() {
           return acc;
         }, {})
     });
+
+    // Add initialization check
+    const checkMemberstackInit = () => {
+      const memberstackInstance = window.memberstack;
+      console.log('Memberstack Instance Check:', {
+        exists: !!memberstackInstance,
+        methods: memberstackInstance ? Object.keys(memberstackInstance) : [],
+        version: memberstackInstance?.version,
+        isInitialized: !!memberstackInstance?.isInitialized,
+        config: memberstackInstance?.config
+      });
+    };
+
+    // Check immediately
+    checkMemberstackInit();
+
+    // Check again after a short delay to see if it initializes
+    const timeoutId = setTimeout(checkMemberstackInit, 1000);
+
+    return () => clearTimeout(timeoutId);
   }, []);
 
   // If no public key, show error message with more details
