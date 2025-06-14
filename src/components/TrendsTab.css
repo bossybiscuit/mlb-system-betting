@@ -1,0 +1,800 @@
+/* TrendsTab.css - Dark Mode Theme */
+
+/* ------ Main Container ------ */
+.trends-tab {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    padding: 20px;
+    border-radius: 10px;
+    min-height: 100vh;
+}
+
+/* ------ Season Controls ------ */
+.season-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border: 1px solid #444;
+}
+
+.year-select {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.year-select label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #e0e0e0;
+}
+
+.year-select select {
+    padding: 8px 12px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #333;
+    color: #e0e0e0;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.year-select select:hover {
+    border-color: #4a66f5;
+}
+
+.year-select select:focus {
+    outline: none;
+    border-color: #4a66f5;
+    box-shadow: 0 0 0 2px rgba(74, 102, 245, 0.2);
+}
+
+.season-status {
+    font-style: italic;
+    color: #b0b0b0;
+    font-size: 14px;
+}
+
+/* ------ Section Headers ------ */
+.trends-section {
+    margin-bottom: 40px;
+}
+
+.trends-section h2 {
+    color: #e0e0e0;
+    border-bottom: 2px solid #2196f3;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 0;
+}
+
+.clear-filter-button {
+    background-color: #444;
+    border: 1px solid #666;
+    color: #e0e0e0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-left: 15px;
+}
+
+.clear-filter-button:hover {
+    background-color: #555;
+}
+
+/* ------ Stats Table ------ */
+.stats-table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #2a2a2a;
+}
+
+.stats-table th {
+    background-color: #2196f3;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.stats-table td {
+    border: 1px solid #444;
+    padding: 12px;
+    text-align: center;
+    color: #e0e0e0;
+}
+
+.stats-table tr:nth-child(even) {
+    background-color: #333;
+}
+
+.stats-table tr:hover {
+    background-color: #3a3a3a;
+}
+
+.stats-table tr td:first-child {
+    font-weight: bold;
+    text-align: left;
+}
+
+.positive {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.negative {
+    color: #f44336;
+    font-weight: bold;
+}
+
+.view-details-button {
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.2s;
+}
+
+.view-details-button:hover {
+    background-color: #1976d2;
+}
+
+/* ------ Comparison Cards ------ */
+.comparison-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.comparison-card {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.comparison-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.comparison-card h3 {
+    color: #2196f3;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 16px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+}
+
+.comparison-results {
+    margin-bottom: 15px;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    padding: 8px 0;
+    border-bottom: 1px dashed #444;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.type {
+    font-weight: bold;
+    color: #e0e0e0;
+}
+
+.win-rate {
+    color: #b0b0b0;
+}
+
+.comparison-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+    border-top: 1px solid #444;
+    padding-top: 15px;
+}
+
+.comparison-summary {
+    font-size: 14px;
+    color: #e0e0e0;
+    margin-bottom: 5px;
+}
+
+/* ------ Game Cards (Matching Pick Cards Style) ------ */
+.game-list {
+    margin-top: 20px;
+}
+
+.travel-games {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.game-card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    background-color: #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    border: 1px solid #444;
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 100%;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.game-card.win-card {
+    border-left: 4px solid #4caf50;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.game-card.loss-card {
+    border-left: 4px solid #f44336;
+    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+}
+
+.game-header {
+    background-color: #333;
+    padding: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #444;
+}
+
+.game-date {
+    font-weight: bold;
+    color: #2196f3;
+    font-size: 14px;
+}
+
+.game-venue {
+    color: #b0b0b0;
+    font-size: 12px;
+}
+
+/* Team Matchup with Logos */
+.matchup {
+    padding: 15px 10px;
+    background-color: #333;
+    border-bottom: 1px solid #444;
+    font-weight: bold;
+}
+
+.matchup .teams {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.team-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 90px;
+}
+
+.team-logo {
+    width: 40px;
+    height: 40px;
+    display: block;
+    margin: 0 auto 5px;
+    object-fit: contain;
+}
+
+.team-name {
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.versus {
+    font-weight: bold;
+    font-size: 1rem;
+    margin: 0 5px;
+    color: #e0e0e0;
+}
+
+.away-team {
+    color: #f44336;
+}
+
+.home-team {
+    color: #2196f3;
+}
+
+.at {
+    margin: 0 4px;
+    font-weight: normal;
+    color: #b0b0b0;
+}
+
+/* Travel Info Sections */
+.team-travel-info {
+    margin: 10px 15px;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #e0e0e0;
+}
+
+.team-travel-label {
+    font-size: 12px;
+    color: #b0b0b0;
+    font-weight: normal;
+    margin-top: 2px;
+}
+
+.game-details {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #b0b0b0;
+    flex-grow: 1;
+    padding: 0 15px;
+}
+
+.game-details div {
+    margin: 4px 0;
+}
+
+.game-result {
+    margin: 10px 15px 15px 15px;
+    padding: 8px;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.game-result.win {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+    border: 1px solid #4caf50;
+}
+
+.game-result.loss {
+    background-color: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+    border: 1px solid #f44336;
+}
+
+/* Game Footer */
+.game-footer {
+    background-color: #333;
+    padding: 8px 12px 10px 12px;
+    border-top: 1px solid #444;
+    text-align: right;
+}
+
+.venue {
+    color: #b0b0b0;
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+.game-time {
+    font-weight: bold;
+    color: #b0b0b0;
+}
+
+/* Team Colors - Individual Team Styling */
+.team-name.team-110 {
+    color: #df4601;
+}
+
+/* Baltimore Orioles */
+.team-name.team-111 {
+    color: #bd3039;
+}
+
+/* Boston Red Sox */
+.team-name.team-147 {
+    color: #003087;
+}
+
+/* New York Yankees */
+.team-name.team-139 {
+    color: #092c5c;
+}
+
+/* Tampa Bay Rays */
+.team-name.team-141 {
+    color: #134a8e;
+}
+
+/* Toronto Blue Jays */
+.team-name.team-145 {
+    color: #27251f;
+}
+
+/* Chicago White Sox */
+.team-name.team-114 {
+    color: #e31937;
+}
+
+/* Cleveland Guardians */
+.team-name.team-116 {
+    color: #0c2340;
+}
+
+/* Detroit Tigers */
+.team-name.team-118 {
+    color: #004687;
+}
+
+/* Kansas City Royals */
+.team-name.team-142 {
+    color: #002b5c;
+}
+
+/* Minnesota Twins */
+.team-name.team-117 {
+    color: #eb6e1f;
+}
+
+/* Houston Astros */
+.team-name.team-108 {
+    color: #ba0021;
+}
+
+/* Los Angeles Angels */
+.team-name.team-133 {
+    color: #003831;
+}
+
+/* Oakland Athletics */
+.team-name.team-136 {
+    color: #0c2c56;
+}
+
+/* Seattle Mariners */
+.team-name.team-140 {
+    color: #c0111f;
+}
+
+/* Texas Rangers */
+.team-name.team-144 {
+    color: #ce1141;
+}
+
+/* Atlanta Braves */
+.team-name.team-146 {
+    color: #00a3e0;
+}
+
+/* Miami Marlins */
+.team-name.team-121 {
+    color: #ff5910;
+}
+
+/* New York Mets */
+.team-name.team-143 {
+    color: #e81828;
+}
+
+/* Philadelphia Phillies */
+.team-name.team-120 {
+    color: #ab0003;
+}
+
+/* Washington Nationals */
+.team-name.team-112 {
+    color: #0e3386;
+}
+
+/* Chicago Cubs */
+.team-name.team-113 {
+    color: #c6011f;
+}
+
+/* Cincinnati Reds */
+.team-name.team-158 {
+    color: #12284b;
+}
+
+/* Milwaukee Brewers */
+.team-name.team-134 {
+    color: #27251f;
+}
+
+/* Pittsburgh Pirates */
+.team-name.team-138 {
+    color: #c41e3a;
+}
+
+/* St. Louis Cardinals */
+.team-name.team-109 {
+    color: #a71930;
+}
+
+/* Arizona Diamondbacks */
+.team-name.team-115 {
+    color: #33006f;
+}
+
+/* Colorado Rockies */
+.team-name.team-119 {
+    color: #005a9c;
+}
+
+/* Los Angeles Dodgers */
+.team-name.team-135 {
+    color: #2f241d;
+}
+
+/* San Diego Padres */
+.team-name.team-137 {
+    color: #fd5a1e;
+}
+
+/* San Francisco Giants */
+
+/* ------ Travel Type Colors ------ */
+.travel-away-to-away {
+    background-color: rgba(255, 99, 71, 0.2);
+    border-left: 3px solid #ff6347;
+}
+
+.travel-home-to-away {
+    background-color: rgba(255, 165, 0, 0.2);
+    border-left: 3px solid #ffa500;
+}
+
+.travel-rest-day-away,
+.travel-rest-day-home,
+.travel-rest-day,
+.travel-rest-day-first {
+    background-color: rgba(128, 128, 128, 0.2);
+    border-left: 3px solid #808080;
+}
+
+.travel-home-to-home-no-rest {
+    background-color: rgba(0, 128, 0, 0.2);
+    border-left: 3px solid #008000;
+}
+
+.travel-home-to-home-with-rest {
+    background-color: rgba(0, 0, 255, 0.2);
+    border-left: 3px solid #0000ff;
+}
+
+.travel-away-to-home {
+    background-color: rgba(128, 0, 128, 0.2);
+    border-left: 3px solid #800080;
+}
+
+.travel-unknown {
+    background-color: rgba(128, 128, 128, 0.2);
+    border-left: 3px solid #808080;
+}
+
+/* ------ Show More Button ------ */
+.show-more {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.show-more-button {
+    background-color: #444;
+    border: 1px solid #666;
+    color: #e0e0e0;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.show-more-button:hover {
+    background-color: #555;
+}
+
+/* ------ Analysis Section ------ */
+.analysis-content {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #2196f3;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.analysis-content p {
+    margin: 10px 0;
+    line-height: 1.6;
+    color: #e0e0e0;
+}
+
+.analysis-content ul {
+    margin: 15px 0;
+    padding-left: 20px;
+}
+
+.analysis-content li {
+    margin: 8px 0;
+    line-height: 1.5;
+    color: #e0e0e0;
+}
+
+.analysis-content strong {
+    color: #2196f3;
+}
+
+/* ------ Loading and States ------ */
+.loading {
+    text-align: center;
+    font-size: 18px;
+    color: #b0b0b0;
+    margin: 50px 0;
+    background-color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    font-style: italic;
+}
+
+/* ------ Date Range Display ------ */
+.date-range-display {
+    background-color: #2a2a2a;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #b0b0b0;
+    font-style: italic;
+    border: 1px solid #444;
+}
+
+/* ------ Additional Elements ------ */
+.travel-indicator {
+    margin-top: 8px;
+    padding: 6px;
+    background-color: rgba(255, 243, 224, 0.2);
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+    color: #ff9800;
+    font-size: 12px;
+    border: 1px solid #ff9800;
+}
+
+.icon {
+    margin-right: 4px;
+}
+
+.score {
+    background-color: #333;
+    border-radius: 4px;
+    padding: 2px 5px;
+    margin: 0 5px;
+    font-size: 12px;
+    color: #e0e0e0;
+    border: 1px solid #555;
+}
+
+.venue {
+    font-size: 12px;
+    color: #b0b0b0;
+    margin-left: auto;
+}
+
+/* ------ Responsive Design ------ */
+@media (max-width: 768px) {
+    .season-controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .comparison-container {
+        grid-template-columns: 1fr;
+    }
+
+    .travel-games {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .comparison-actions {
+        gap: 8px;
+    }
+
+    .game-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .matchup .teams {
+        gap: 10px;
+    }
+
+    .team-container {
+        min-width: 70px;
+    }
+
+    .team-logo {
+        width: 35px;
+        height: 35px;
+    }
+}
+
+@media (max-width: 480px) {
+    .trends-tab {
+        padding: 15px;
+    }
+
+    .stats-table-container {
+        font-size: 14px;
+    }
+
+    .stats-table th,
+    .stats-table td {
+        padding: 8px;
+    }
+
+    .comparison-card {
+        padding: 15px;
+    }
+
+    .game-card {
+        margin-bottom: 15px;
+    }
+
+    .team-travel-info {
+        margin: 8px 12px;
+        padding: 8px;
+    }
+}
