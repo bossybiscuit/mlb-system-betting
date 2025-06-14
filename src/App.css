@@ -537,3 +537,35 @@ h2 {
     gap: 15px;
   }
 }
+
+/* User Controls */
+.user-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #2a2a2a;
+  border-radius: 5px;
+  border: 1px solid #444;
+}
+
+.user-email {
+  color: #e0e0e0;
+  font-size: 0.9rem;
+}
+
+.logout-button {
+  padding: 8px 16px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.logout-button:hover {
+  background-color: #c82333;
+}

@@ -1,6 +1,7 @@
 import React, {
   useState, useEffect
 } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import { format, parseISO, differenceInDays, subDays, addDays, isToday, parse } from 'date-fns';
 import axios from 'axios';
@@ -13,9 +14,12 @@ import KRateUndersTab from './components/KRateUndersTab';
 import EnhancedPicksOfTheDay from './components/EnhancedPicksOfTheDay';
 import './components/EnhancedPicksOfTheDay.css';
 import PitchingOutsPredictor from './components/PitchingOutsPredictor';
+import { MemberstackProvider, useMemberstack } from '@memberstack/react';
+import Login from './components/Login';
 
-
-function App() {
+// Create a wrapper component for the main app content
+function MainApp() {
+  const { member, memberstack } = useMemberstack();
   const [activeTab, setActiveTab] = useState('picks');
   const [scheduleData, setScheduleData] = useState([]);
   const [travelGames, setTravelGames] = useState([]);
@@ -963,11 +967,25 @@ function App() {
     fetchPicksOfTheDay();
   };
 
+  const handleLogout = async () => {
+    try {
+      await memberstack.logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <div className="App">
       <header className="App-header">
         <h1>MLB Travel Schedule Tracker</h1>
         <p>Track and analyze MLB team travel patterns and performance</p>
+        {member && (
+          <div className="user-controls">
+            <span className="user-email">{member.email}</span>
+            <button onClick={handleLogout} className="logout-button">Logout</button>
+          </div>
+        )}
       </header>
 
       <div className="tabs">
@@ -1092,6 +1110,35 @@ function App() {
         )}
       </div>
     </div>
+  );
+}
+
+// Main App component with routing
+function App() {
+  const memberstack = {
+    publicKey: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY
+  };
+
+  // Debug log
+  console.log('Memberstack public key exists:', !!process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY);
+
+  return (
+    <MemberstackProvider config={memberstack}>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <MainApp />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </MemberstackProvider>
   );
 }
 
