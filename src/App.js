@@ -17,6 +17,7 @@ import PitchingOutsPredictor from './components/PitchingOutsPredictor';
 import { MemberstackProvider, useMemberstack } from '@memberstack/react';
 import Login from './components/Login';
 import ProtectedRoute from './components/ProtectedRoute';
+import Signup from './components/Signup';
 
 // Create a wrapper component for the main app content
 function MainApp() {
@@ -1120,14 +1121,44 @@ function App() {
     publicKey: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY
   };
 
-  // Debug log
-  console.log('Memberstack public key exists:', !!process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY);
+  // Enhanced debug logging
+  useEffect(() => {
+    console.log('Memberstack Configuration:', {
+      hasPublicKey: !!process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY,
+      publicKeyLength: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY?.length,
+      publicKeyPrefix: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY?.substring(0, 10) + '...',
+      environment: process.env.NODE_ENV,
+      allEnvKeys: Object.keys(process.env).filter(key => key.startsWith('REACT_APP_'))
+    });
+  }, []);
+
+  // If no public key, show error message
+  if (!process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY) {
+    return (
+      <div style={{ 
+        padding: '20px', 
+        color: 'red', 
+        backgroundColor: '#fff', 
+        textAlign: 'center',
+        margin: '20px',
+        borderRadius: '5px',
+        border: '1px solid red'
+      }}>
+        <h2>Configuration Error</h2>
+        <p>Memberstack public key is not configured. Please check your environment variables.</p>
+        <p>Expected: REACT_APP_MEMBERSTACK_PUBLIC_KEY</p>
+        <p>Current environment: {process.env.NODE_ENV}</p>
+        <p>Available environment variables: {Object.keys(process.env).filter(key => key.startsWith('REACT_APP_')).join(', ')}</p>
+      </div>
+    );
+  }
 
   return (
     <MemberstackProvider config={memberstack}>
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route
             path="/"
             element={
