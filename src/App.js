@@ -14,14 +14,11 @@ import KRateUndersTab from './components/KRateUndersTab';
 import EnhancedPicksOfTheDay from './components/EnhancedPicksOfTheDay';
 import './components/EnhancedPicksOfTheDay.css';
 import PitchingOutsPredictor from './components/PitchingOutsPredictor';
-import { MemberstackProvider, useMemberstack } from '@memberstack/react';
-import Login from './components/Login';
+import Navigation from './components/Navigation';
 import ProtectedRoute from './components/ProtectedRoute';
-import Signup from './components/Signup';
 
 // Create a wrapper component for the main app content
 function MainApp() {
-  const { member, memberstack } = useMemberstack();
   const [activeTab, setActiveTab] = useState('picks');
   const [scheduleData, setScheduleData] = useState([]);
   const [travelGames, setTravelGames] = useState([]);
@@ -849,105 +846,116 @@ function MainApp() {
     return { travelGamesList, matchupsList };
   };
 
-  // Replace your updateTrendsData function in App.js with this improved version
+  // Update the updateTrendsData function to include matchup stats
   const updateTrendsData = (travelGames) => {
     console.log("Updating trends data with", travelGames.length, "travel games");
 
     // Create a copy of the current trends data
     const newTrendsData = {
-      travelTypes: {
-        'Home to Away': { wins: 0, losses: 0 },
-        'Away to Away': { wins: 0, losses: 0 },
-        'Away to Home': { wins: 0, losses: 0 },
-        'Home to Home (no Rest)': { wins: 0, losses: 0 },
-        'Home to Home (with Rest)': { wins: 0, losses: 0 }
-      },
-      comparisons: {
-        'Home to Away vs Away to Home': { first: 0, second: 0 },
-        'Away to Away vs Away to Home': { first: 0, second: 0 },
-        'Home to Away vs Home to Home (no Rest)': { first: 0, second: 0 },
-        'Away to Away vs Home to Home (no Rest)': { first: 0, second: 0 },
-        'Home to Away vs Home to Home (with Rest)': { first: 0, second: 0 },
-        'Away to Away vs Home to Home (with Rest)': { first: 0, second: 0 }
-      }
+        travelTypes: {
+            'Home to Away': { wins: 0, losses: 0 },
+            'Away to Away': { wins: 0, losses: 0 },
+            'Away to Home': { wins: 0, losses: 0 },
+            'Home to Home (no Rest)': { wins: 0, losses: 0 },
+            'Home to Home (with Rest)': { wins: 0, losses: 0 }
+        },
+        matchups: {}, // Add matchups object to store direct matchup stats
+        comparisons: {
+            'Home to Away vs Away to Home': { first: 0, second: 0 },
+            'Away to Away vs Away to Home': { first: 0, second: 0 },
+            'Home to Away vs Home to Home (no Rest)': { first: 0, second: 0 },
+            'Away to Away vs Home to Home (no Rest)': { first: 0, second: 0 },
+            'Home to Away vs Home to Home (with Rest)': { first: 0, second: 0 },
+            'Away to Away vs Home to Home (with Rest)': { first: 0, second: 0 }
+        }
     };
 
-    // Calculate wins and losses for each travel type
+    // Calculate wins and losses for each travel type and matchups
     travelGames.forEach(game => {
-      if (game.travelType in newTrendsData.travelTypes) {
-        if (game.won === true) {
-          newTrendsData.travelTypes[game.travelType].wins++;
-        } else if (game.won === false) {
-          newTrendsData.travelTypes[game.travelType].losses++;
+        // Update overall travel type stats
+        if (game.travelType in newTrendsData.travelTypes) {
+            if (game.won === true) {
+                newTrendsData.travelTypes[game.travelType].wins++;
+            } else if (game.won === false) {
+                newTrendsData.travelTypes[game.travelType].losses++;
+            }
         }
-      }
+
+        // Update matchup stats if we have opponent travel type
+        if (game.travelType && game.opponentTravel) {
+            console.log('Processing game for matchup stats:', {
+                gamePk: game.gamePk,
+                travelType: game.travelType,
+                opponentTravel: game.opponentTravel,
+                won: game.won
+            });
+
+            const matchupKey = `${game.travelType} vs ${game.opponentTravel}`;
+            const [firstType, secondType] = matchupKey.split(' vs ');
+            
+            // Initialize matchup if it doesn't exist
+            if (!newTrendsData.matchups[matchupKey]) {
+                console.log('Creating new matchup entry for:', matchupKey);
+                newTrendsData.matchups[matchupKey] = {
+                    first: { wins: 0, losses: 0 },
+                    second: { wins: 0, losses: 0 },
+                    games: []
+                };
+            }
+
+            // Update the appropriate side of the matchup
+            const isFirstType = game.travelType === firstType;
+            console.log('Updating matchup:', { 
+                matchupKey, 
+                isFirstType, 
+                gameTravelType: game.travelType,
+                firstType,
+                secondType
+            });
+
+            if (isFirstType) {
+                if (game.won === true) {
+                    newTrendsData.matchups[matchupKey].first.wins++;
+                } else if (game.won === false) {
+                    newTrendsData.matchups[matchupKey].first.losses++;
+                }
+            } else {
+                if (game.won === true) {
+                    newTrendsData.matchups[matchupKey].second.wins++;
+                } else if (game.won === false) {
+                    newTrendsData.matchups[matchupKey].second.losses++;
+                }
+            }
+
+            // Add game to the matchup's game list if not already there
+            if (!newTrendsData.matchups[matchupKey].games.some(g => g.gamePk === game.gamePk)) {
+                console.log('Adding game to matchup games list');
+                newTrendsData.matchups[matchupKey].games.push(game);
+            }
+        }
     });
 
     console.log("Calculated travel type stats:", newTrendsData.travelTypes);
+    console.log("Calculated matchup stats:", newTrendsData.matchups);
 
     // Calculate comparisons - we'll do this by comparing win percentages
     const winPercentages = {};
 
     Object.keys(newTrendsData.travelTypes).forEach(type => {
-      const { wins, losses } = newTrendsData.travelTypes[type];
-      const total = wins + losses;
-      winPercentages[type] = total > 0 ? wins / total : 0;
+        const { wins, losses } = newTrendsData.travelTypes[type];
+        const total = wins + losses;
+        winPercentages[type] = total > 0 ? wins / total : 0;
     });
 
     // Now update the comparisons
-    newTrendsData.comparisons['Home to Away vs Away to Home'].first =
-      winPercentages['Home to Away'] > winPercentages['Away to Home'] ? 1 : 0;
-    newTrendsData.comparisons['Home to Away vs Away to Home'].second =
-      winPercentages['Away to Home'] > winPercentages['Home to Away'] ? 1 : 0;
-
-    newTrendsData.comparisons['Away to Away vs Away to Home'].first =
-      winPercentages['Away to Away'] > winPercentages['Away to Home'] ? 1 : 0;
-    newTrendsData.comparisons['Away to Away vs Away to Home'].second =
-      winPercentages['Away to Home'] > winPercentages['Away to Away'] ? 1 : 0;
-
-    newTrendsData.comparisons['Home to Away vs Home to Home (no Rest)'].first =
-      winPercentages['Home to Away'] > winPercentages['Home to Home (no Rest)'] ? 1 : 0;
-    newTrendsData.comparisons['Home to Away vs Home to Home (no Rest)'].second =
-      winPercentages['Home to Home (no Rest)'] > winPercentages['Home to Away'] ? 1 : 0;
-
-    newTrendsData.comparisons['Away to Away vs Home to Home (no Rest)'].first =
-      winPercentages['Away to Away'] > winPercentages['Home to Home (no Rest)'] ? 1 : 0;
-    newTrendsData.comparisons['Away to Away vs Home to Home (no Rest)'].second =
-      winPercentages['Home to Home (no Rest)'] > winPercentages['Away to Away'] ? 1 : 0;
-
-    newTrendsData.comparisons['Home to Away vs Home to Home (with Rest)'].first =
-      winPercentages['Home to Away'] > winPercentages['Home to Home (with Rest)'] ? 1 : 0;
-    newTrendsData.comparisons['Home to Away vs Home to Home (with Rest)'].second =
-      winPercentages['Home to Home (with Rest)'] > winPercentages['Home to Away'] ? 1 : 0;
-
-    newTrendsData.comparisons['Away to Away vs Home to Home (with Rest)'].first =
-      winPercentages['Away to Away'] > winPercentages['Home to Home (with Rest)'] ? 1 : 0;
-    newTrendsData.comparisons['Away to Away vs Home to Home (with Rest)'].second =
-      winPercentages['Home to Home (with Rest)'] > winPercentages['Away to Away'] ? 1 : 0;
-
-    setTrendsData(newTrendsData);
-
-    // Also update the seasonStats
-    const newSeasonStats = {
-      byType: {}
-    };
-
-    Object.keys(newTrendsData.travelTypes).forEach(type => {
-      const wins = newTrendsData.travelTypes[type].wins;
-      const losses = newTrendsData.travelTypes[type].losses;
-      const total = wins + losses;
-      const percentage = total > 0 ? ((wins / total) * 100).toFixed(1) : '0.0';
-
-      newSeasonStats.byType[type] = {
-        wins,
-        losses,
-        total,
-        percentage
-      };
+    Object.keys(newTrendsData.comparisons).forEach(comparisonKey => {
+        const [firstType, secondType] = comparisonKey.split(' vs ');
+        newTrendsData.comparisons[comparisonKey].first = winPercentages[firstType] > winPercentages[secondType] ? 1 : 0;
+        newTrendsData.comparisons[comparisonKey].second = winPercentages[secondType] > winPercentages[firstType] ? 1 : 0;
     });
 
-    console.log("Updated season stats:", newSeasonStats);
-    setSeasonStats(newSeasonStats);
+    setTrendsData(newTrendsData);
+    setSeasonStats(newTrendsData); // Update seasonStats with the same data
   };
 
   const handleDateChange = (e, type) => {
@@ -969,239 +977,101 @@ function MainApp() {
     fetchPicksOfTheDay();
   };
 
-  const handleLogout = async () => {
-    try {
-      await memberstack.logout();
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
-
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>MLB Travel Schedule Tracker</h1>
-        <p>Track and analyze MLB team travel patterns and performance</p>
-        {member && (
-          <div className="user-controls">
-            <span className="user-email">{member.email}</span>
-            <button onClick={handleLogout} className="logout-button">Logout</button>
-          </div>
-        )}
-      </header>
-
-      <div className="tabs">
-        <button
-          className={`tab-button ${activeTab === 'picks' ? 'active' : ''}`}
-          onClick={() => setActiveTab('picks')}
-        >
-          Picks of The Day
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'trends' ? 'active' : ''}`}
-          onClick={() => setActiveTab('trends')}
-        >
-          Travel Trends
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'fade' ? 'active' : ''}`}
-          onClick={() => setActiveTab('fade')}
-        >
-          Fade The Sweep
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'rockies' ? 'active' : ''}`}
-          onClick={() => setActiveTab('rockies')}
-        >
-          Fade The Rockies
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'krate' ? 'active' : ''}`}
-          onClick={() => setActiveTab('krate')}
-        >
-          K-Rate Unders
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'outs' ? 'active' : ''}`}
-          onClick={() => setActiveTab('outs')}
-        >
-          Pitching Outs
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'schedule' ? 'active' : ''}`}
-          onClick={() => setActiveTab('schedule')}
-        >
-          Daily Schedule
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'tracker' ? 'active' : ''}`}
-          onClick={() => setActiveTab('tracker')}
-        >
-          Travel Tracker
-        </button>
-      </div>
-
-      <div className="tab-content">
-        {activeTab === 'picks' && (
-          <EnhancedPicksOfTheDay
-            picksOfTheDay={picksOfTheDay}
-            picksLoading={picksLoading}
-            trendsData={trendsData}
-            seasonStats={seasonStats && seasonStats.byType ? seasonStats : {
-              byType: {
-                'Home to Away': { wins: 0, losses: 0, total: 0, percentage: 0 },
-                'Away to Away': { wins: 0, losses: 0, total: 0, percentage: 0 },
-                'Away to Home': { wins: 0, losses: 0, total: 0, percentage: 0 },
-                'Home to Home (no Rest)': { wins: 0, losses: 0, total: 0, percentage: 0 },
-                'Home to Home (with Rest)': { wins: 0, losses: 0, total: 0, percentage: 0 },
-              }
-            }}
-            refreshAll={refreshAll}
-          />
-        )}
-
-        {activeTab === 'schedule' && (
-          <ScheduleTab
-            loading={loading}
-            scheduleData={scheduleData}
-            selectedDate={selectedDate}
-            handleDateChange={handleDateChange}
-            fetchDailySchedule={fetchDailySchedule}
-            matchups={matchups}
-            travelGames={travelGames}
-          />
-        )}
-
-        {activeTab === 'tracker' && (
-          <TrackerTab
-            loading={loading}
-            travelGames={travelGames}
-            matchups={matchups}
-            scheduleData={scheduleData}
-            startDate={startDate}
-            endDate={endDate}
-            handleDateChange={handleDateChange}
-            fetchSchedule={fetchSchedule}
-          />
-        )}
-
-        {activeTab === 'trends' && (
-          <TrendsTab
-            trendsData={trendsData}
-            seasonTravelGames={seasonTravelGames}
-            loading={seasonLoading}
-            seasonYear={seasonYear}
-            handleSeasonYearChange={handleSeasonYearChange}
-          />
-        )}
-
-        {activeTab === 'fade' && (
-          <FadeTheSweepTab />
-        )}
-
-        {activeTab === 'rockies' && (
-          <FadeTheRockiesTab />
-        )}
-
-        {activeTab === 'krate' && (
-          <KRateUndersTab />
-        )}
-
-        {activeTab === 'outs' && (
-          <PitchingOutsPredictor />
-        )}
-      </div>
+      <Navigation />
+      
+      <main className="main-content">
+        <Routes>
+          <Route path="/picks" element={
+            <EnhancedPicksOfTheDay
+              picksOfTheDay={picksOfTheDay}
+              picksLoading={picksLoading}
+              trendsData={trendsData}
+              seasonStats={seasonStats && seasonStats.byType ? seasonStats : {
+                byType: {
+                  'Home to Away': { wins: 0, losses: 0, total: 0, percentage: 0 },
+                  'Away to Away': { wins: 0, losses: 0, total: 0, percentage: 0 },
+                  'Away to Home': { wins: 0, losses: 0, total: 0, percentage: 0 },
+                  'Home to Home (no Rest)': { wins: 0, losses: 0, total: 0, percentage: 0 },
+                  'Home to Home (with Rest)': { wins: 0, losses: 0, total: 0, percentage: 0 },
+                }
+              }}
+              refreshAll={refreshAll}
+            />
+          } />
+          
+          <Route path="/trends" element={
+            <TrendsTab
+              trendsData={trendsData}
+              seasonTravelGames={seasonTravelGames}
+              loading={seasonLoading}
+              seasonYear={seasonYear}
+              handleSeasonYearChange={handleSeasonYearChange}
+              picksOfTheDay={picksOfTheDay}
+              picksLoading={picksLoading}
+            />
+          } />
+          
+          <Route path="/fade" element={
+            <FadeTheSweepTab />
+          } />
+          
+          <Route path="/krate" element={
+            <KRateUndersTab />
+          } />
+          
+          <Route path="/outs" element={
+            <PitchingOutsPredictor />
+          } />
+          
+          <Route path="/schedule" element={
+            <ScheduleTab
+              loading={loading}
+              scheduleData={scheduleData}
+              selectedDate={selectedDate}
+              handleDateChange={handleDateChange}
+              fetchDailySchedule={fetchDailySchedule}
+              matchups={matchups}
+              travelGames={travelGames}
+            />
+          } />
+          
+          <Route path="/tracker" element={
+            <TrackerTab
+              loading={loading}
+              travelGames={travelGames}
+              matchups={matchups}
+              scheduleData={scheduleData}
+              startDate={startDate}
+              endDate={endDate}
+              handleDateChange={handleDateChange}
+              fetchSchedule={fetchSchedule}
+            />
+          } />
+          
+          <Route path="/" element={<Navigate to="/picks" replace />} />
+        </Routes>
+      </main>
     </div>
   );
 }
 
 // Main App component with routing
 function App() {
-  // Using Memberstack public key for authentication
-  const memberstack = {
-    publicKey: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY
-  };
-
-  // Enhanced debug logging with specific Memberstack checks
-  useEffect(() => {
-    const memberstackKey = process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY;
-    console.log('Memberstack Key Check:', {
-      exists: !!memberstackKey,
-      length: memberstackKey?.length || 0,
-      prefix: memberstackKey?.substring(0, 5) || 'none',
-      fullKey: memberstackKey || 'not set',
-      environment: process.env.NODE_ENV,
-      isProduction: process.env.NODE_ENV === 'production',
-      allEnvVars: Object.keys(process.env)
-        .filter(key => key.startsWith('REACT_APP_'))
-        .reduce((acc, key) => {
-          acc[key] = process.env[key] ? 'Set' : 'Not Set';
-          return acc;
-        }, {})
-    });
-
-    // Add initialization check
-    const checkMemberstackInit = () => {
-      const memberstackInstance = window.memberstack;
-      console.log('Memberstack Instance Check:', {
-        exists: !!memberstackInstance,
-        methods: memberstackInstance ? Object.keys(memberstackInstance) : [],
-        version: memberstackInstance?.version,
-        isInitialized: !!memberstackInstance?.isInitialized,
-        config: memberstackInstance?.config
-      });
-    };
-
-    // Check immediately
-    checkMemberstackInit();
-
-    // Check again after a short delay to see if it initializes
-    const timeoutId = setTimeout(checkMemberstackInit, 1000);
-
-    return () => clearTimeout(timeoutId);
-  }, []);
-
-  // If no public key, show error message with more details
-  if (!process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY) {
-    return (
-      <div style={{ 
-        padding: '20px', 
-        color: 'red', 
-        backgroundColor: '#fff', 
-        textAlign: 'center',
-        margin: '20px',
-        borderRadius: '5px',
-        border: '1px solid red'
-      }}>
-        <h2>Configuration Error</h2>
-        <p>Memberstack public key is not configured. Please check your environment variables.</p>
-        <p>Expected: REACT_APP_MEMBERSTACK_PUBLIC_KEY</p>
-        <p>Current environment: {process.env.NODE_ENV}</p>
-        <p>Key format expected: pk_sb_...</p>
-        <p>Available environment variables: {Object.keys(process.env).filter(key => key.startsWith('REACT_APP_')).join(', ')}</p>
-        <p>Please verify in Vercel dashboard that the key is set for all environments (Production, Preview, and Development)</p>
-      </div>
-    );
-  }
-
   return (
-    <MemberstackProvider config={memberstack}>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <MainApp />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
-    </MemberstackProvider>
+    <Router>
+      <Routes>
+        <Route
+          path="/*"
+          element={
+            <ProtectedRoute>
+              <MainApp />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Router>
   );
 }
 

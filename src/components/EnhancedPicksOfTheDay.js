@@ -12,8 +12,7 @@ function EnhancedPicksOfTheDay({
     const [expandedPick, setExpandedPick] = useState(null);
     const [sortedPicks, setSortedPicks] = useState({
         travel: [],
-        sweep: [],
-        rockies: []
+        sweep: []
     });
 
     // Enhanced debug logging for data inspection
@@ -21,7 +20,6 @@ function EnhancedPicksOfTheDay({
         console.log("EnhancedPicksOfTheDay - Received picks data:", {
             travel: picksOfTheDay?.travel?.length || 0,
             sweep: picksOfTheDay?.sweep?.length || 0,
-            rockies: picksOfTheDay?.rockies?.length || 0,
             fullPicks: picksOfTheDay
         });
     }, [picksOfTheDay]);
@@ -62,7 +60,6 @@ function EnhancedPicksOfTheDay({
             // Make defensive copies and ensure we have arrays
             const travelPicks = Array.isArray(picksOfTheDay.travel) ? [...picksOfTheDay.travel] : [];
             const sweepPicks = Array.isArray(picksOfTheDay.sweep) ? [...picksOfTheDay.sweep] : [];
-            const rockiesPicks = Array.isArray(picksOfTheDay.rockies) ? [...picksOfTheDay.rockies] : [];
 
             // Log before sorting to validate the initial data
             console.log("BEFORE SORTING - travel picks:", travelPicks);
@@ -70,7 +67,6 @@ function EnhancedPicksOfTheDay({
             // Create new arrays with sorting rather than mutating the original
             const sortedTravel = [...travelPicks].sort((a, b) => getGameTime(a) - getGameTime(b));
             const sortedSweep = [...sweepPicks].sort((a, b) => getGameTime(a) - getGameTime(b));
-            const sortedRockies = [...rockiesPicks].sort((a, b) => getGameTime(a) - getGameTime(b));
 
             // Log after sorting to check for any issues
             console.log("AFTER SORTING - travel picks:", sortedTravel);
@@ -83,8 +79,7 @@ function EnhancedPicksOfTheDay({
             // Set the sorted picks
             setSortedPicks({
                 travel: sortedTravel,
-                sweep: sortedSweep,
-                rockies: sortedRockies
+                sweep: sortedSweep
             });
         }
     }, [picksOfTheDay]);
@@ -93,8 +88,7 @@ function EnhancedPicksOfTheDay({
     useEffect(() => {
         // If we have no picks or no stats, trigger a refresh
         const hasPicks = picksOfTheDay?.travel?.length > 0 ||
-            picksOfTheDay?.sweep?.length > 0 ||
-            picksOfTheDay?.rockies?.length > 0;
+            picksOfTheDay?.sweep?.length > 0;
 
         const hasStats = seasonStats?.byType &&
             Object.values(seasonStats.byType).some(stat => stat.total > 0);
@@ -230,12 +224,45 @@ function EnhancedPicksOfTheDay({
         return TEAM_COLORS[teamId] || '#333'; // Default color if not found
     };
 
-    // Get win percentage for a travel type from the season stats
-    const getTravelTypeStats = (travelType) => {
-        if (!seasonStats || !seasonStats.byType || !seasonStats.byType[travelType]) {
+    // Get win percentage for a travel type matchup from the season stats
+    const getTravelTypeStats = (travelType, opponentTravelType) => {
+        console.log('Getting travel type stats for:', { travelType, opponentTravelType });
+        console.log('Current seasonStats:', seasonStats);
+
+        if (!seasonStats || !seasonStats.matchups) {
+            console.log('No seasonStats or matchups found');
             return { wins: 0, losses: 0, percentage: 0, total: 0 };
         }
-        return seasonStats.byType[travelType];
+
+        // Create the matchup key in the same format as TrendsTab
+        const matchupKey = `${travelType} vs ${opponentTravelType}`;
+        const reverseMatchupKey = `${opponentTravelType} vs ${travelType}`;
+        
+        console.log('Looking for matchup keys:', { matchupKey, reverseMatchupKey });
+        console.log('Available matchups:', Object.keys(seasonStats.matchups));
+        
+        // Try both directions of the matchup
+        const matchup = seasonStats.matchups[matchupKey] || seasonStats.matchups[reverseMatchupKey];
+        
+        console.log('Found matchup:', matchup);
+        
+        if (!matchup) {
+            console.log('No matchup found for either key');
+            return { wins: 0, losses: 0, percentage: 0, total: 0 };
+        }
+
+        // Determine which side of the matchup we're looking at
+        const isFirstType = matchupKey.startsWith(travelType);
+        const stats = isFirstType ? matchup.first : matchup.second;
+
+        console.log('Selected stats:', { isFirstType, stats });
+
+        return {
+            wins: stats.wins || 0,
+            losses: stats.losses || 0,
+            total: (stats.wins || 0) + (stats.losses || 0),
+            percentage: ((stats.wins || 0) / ((stats.wins || 0) + (stats.losses || 0)) * 100).toFixed(1)
+        };
     };
 
     // Helper function to get travel type for a team (used for potential auto-detection)
@@ -358,10 +385,10 @@ function EnhancedPicksOfTheDay({
                             <div className="travel-analysis">
                                 <h4>Travel Analysis</h4>
 
-                                {/* Added travel type record comparison */}
+                                {/* Update the travel type comparison to use matchup stats */}
                                 <div className="travel-type-comparison">
                                     <strong>
-                                        {pick.awayTravelType || "Away Travel"} [{getTravelTypeStats(pick.awayTravelType).wins}-{getTravelTypeStats(pick.awayTravelType).losses}] vs {pick.homeTravelType || "Home Travel"} [{getTravelTypeStats(pick.homeTravelType).wins}-{getTravelTypeStats(pick.homeTravelType).losses}]
+                                        {pick.awayTravelType || "Away Travel"} [{getTravelTypeStats(pick.awayTravelType, pick.homeTravelType).wins}-{getTravelTypeStats(pick.awayTravelType, pick.homeTravelType).losses}] vs {pick.homeTravelType || "Home Travel"} [{getTravelTypeStats(pick.homeTravelType, pick.awayTravelType).wins}-{getTravelTypeStats(pick.homeTravelType, pick.awayTravelType).losses}]
                                     </strong>
                                 </div>
 
@@ -527,209 +554,23 @@ function EnhancedPicksOfTheDay({
         );
     };
 
-    // Render a Rockies pick card
-    const renderRockiesPickCard = (pick) => {
-        if (!pick || !pick.gamePk) {
-            console.error("Invalid rockies pick:", pick);
-            return null;
-        }
-
-        const isExpanded = isPickExpanded(pick.gamePk, 'rockies');
-
-        // The Rockies ID is always 115
-        const rockiesTeamId = 115;
-        const opponentTeamId = pick.opponent?.id || 0;
-
-        // Get team logos and colors
-        const rockiesLogo = getTeamLogoUrl(rockiesTeamId);
-        const opponentLogo = getTeamLogoUrl(opponentTeamId);
-        const rockiesColor = getTeamColor(rockiesTeamId);
-        const opponentColor = getTeamColor(opponentTeamId);
-
-        return (
-            <div className={`pick-card ${isExpanded ? 'expanded' : ''} has-strategy`} key={pick.gamePk}>
-                <div className="pick-header">
-                    <div className="game-time-status">
-                        {/* Move pick to header left */}
-                        <div className="recommended-bet-highlight-header">
-                            <strong>Pick:</strong> {pick.recommendedBet || "Unknown"}
-                        </div>
-                    </div>
-                    <div className="strategy-indicators">
-                        <div className="strategy-icon fade-rockies" title="Fade the Rockies">
-                            🏔️
-                        </div>
-                    </div>
-                </div>
-
-                <div className="matchup">
-                    <div className="teams">
-                        {pick.isRockiesHome ? (
-                            <>
-                                <div className="team-container">
-                                    <img
-                                        src={opponentLogo}
-                                        alt={`${pick.opponent?.name || "Opponent"} logo`}
-                                        className="team-logo"
-                                    />
-                                    <span
-                                        className="away-team"
-                                        style={{ color: opponentColor }}
-                                    >
-                                        {pick.opponent?.name || "Opponent"}
-                                    </span>
-                                </div>
-                                <span className="versus">@</span>
-                                <div className="team-container">
-                                    <img
-                                        src={rockiesLogo}
-                                        alt="Colorado Rockies logo"
-                                        className="team-logo"
-                                    />
-                                    <span
-                                        className="home-team"
-                                        style={{ color: rockiesColor }}
-                                    >
-                                        Colorado Rockies
-                                    </span>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <div className="team-container">
-                                    <img
-                                        src={rockiesLogo}
-                                        alt="Colorado Rockies logo"
-                                        className="team-logo"
-                                    />
-                                    <span
-                                        className="away-team"
-                                        style={{ color: rockiesColor }}
-                                    >
-                                        Colorado Rockies
-                                    </span>
-                                </div>
-                                <span className="versus">@</span>
-                                <div className="team-container">
-                                    <img
-                                        src={opponentLogo}
-                                        alt={`${pick.opponent?.name || "Opponent"} logo`}
-                                        className="team-logo"
-                                    />
-                                    <span
-                                        className="home-team"
-                                        style={{ color: opponentColor }}
-                                    >
-                                        {pick.opponent?.name || "Opponent"}
-                                    </span>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                <div className="pick-details">
-                    {/* Remove the centered pick recommendation since it's now in the header */}
-
-                    <div className="reason">
-                        <strong>Reason:</strong> {pick.reason || "Fade the Rockies Strategy"}
-                    </div>
-                    <button
-                        className="detail-toggle-button"
-                        onClick={() => toggleExpandPick(pick.gamePk, 'rockies')}
-                    >
-                        {isExpanded ? 'Hide Analysis' : 'Show Analysis'}
-                    </button>
-
-                    {isExpanded && (
-                        <div className="expanded-details">
-                            <div className="rockies-analysis">
-                                <h4>Rockies Analysis</h4>
-                                <p>
-                                    {pick.isRockiesHome !== undefined ?
-                                        (pick.isRockiesHome ?
-                                            `The Colorado Rockies often struggle to cover the run line at home in Coors Field due to the high-scoring environment. ${pick.opponent?.name || "The opponent"} is a favorable pick against the run line.` :
-                                            `The Colorado Rockies typically perform poorly on the road, making them a good team to fade when they play away from Coors Field. ${pick.opponent?.name || "The opponent"} is a strong pick against the Rockies at home.`) :
-                                        "This pick is based on the 'Fade the Rockies' strategy, where the Rockies have shown statistical tendencies that make them favorable to bet against in certain situations."}
-                                </p>
-
-                                <div className="rockies-context">
-                                    <div className="stat-item">
-                                        <span className="stat-label">Location:</span>
-                                        <span className="stat-value">{pick.isRockiesHome ? 'Home (Coors Field)' : 'Away'}</span>
-                                    </div>
-                                    <div className="stat-item">
-                                        <span className="stat-label">Bet Type:</span>
-                                        <span className="stat-value">Run Line (-1.5)</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <div className="pick-footer">
-                    <span className="game-time">{pick.gameTime || 'Time TBD'}</span>
-                    <span className="venue">{pick.venue || 'Venue TBD'}</span>
-                </div>
-            </div>
-        );
-    };
-
     // SINGLE RETURN STATEMENT FOR THE COMPONENT
     return (
-        <div className="picks-of-the-day">
+        <div className="enhanced-picks-container">
             <div className="picks-header">
-                <h2>Picks of The Day - {format(new Date(), 'MMMM d, yyyy')}</h2>
-                <div className="header-controls">
+                <h2>Today's Picks</h2>
+                <div className="picks-actions">
                     <button className="refresh-button copy-button" onClick={() => {
-                        // Build formatted message in the specific requested format
-                        let message = "";
+                        let message = "MLB System Betting Picks\n\n";
 
-                        // Header with date
-                        const today = new Date();
-                        const formattedDate = format(today, 'M/d/yy');
-                        message += `Travel Day (${formattedDate})\n`;
-
-                        // Overall stats from seasonStats
-                        if (seasonStats && seasonStats.byType) {
-                            const homeToAway = seasonStats.byType['Home to Away'];
-                            const awayToAway = seasonStats.byType['Away to Away'];
-                            const awayToHome = seasonStats.byType['Away to Home'];
-                            const homeToHome = seasonStats.byType['Home to Home (no Rest)'] || { wins: 0, losses: 0 };
-                            const homeToHomeRest = seasonStats.byType['Home to Home (with Rest)'] || { wins: 0, losses: 0 };
-
-                            // Combine both Home to Home types
-                            const totalHomeToHome = {
-                                wins: homeToHome.wins + homeToHomeRest.wins,
-                                losses: homeToHome.losses + homeToHomeRest.losses
-                            };
-
-                            message += `Home to Away Games: ${homeToAway?.wins || 0}-${homeToAway?.losses || 0}\n`;
-                            message += `Away to Away Games: ${awayToAway?.wins || 0}-${awayToAway?.losses || 0}\n`;
-                            message += `Away to Home Games: ${awayToHome?.wins || 0}-${awayToHome?.losses || 0}\n`;
-                            message += `Home to Home: ${totalHomeToHome.wins}-${totalHomeToHome.losses} (in games where the opponent traveled)\n\n`;
-                        }
-
-                        // Group travel picks by matchup type
+                        // Add travel picks if available
                         if (sortedPicks.travel && sortedPicks.travel.length > 0) {
+                            message += "**Travel Picks:**\n";
+                            
+                            // Group by matchup type
                             const matchupGroups = {};
-
                             sortedPicks.travel.forEach(pick => {
-                                const awayType = pick.awayTravelType || "Unknown";
-                                const homeType = pick.homeTravelType || "Unknown";
-
-                                // Create matchup key
-                                let matchupKey = "";
-                                if ((awayType === "Home to Away" || awayType === "Away to Away") &&
-                                    (homeType === "Home to Home (no Rest)" || homeType === "Home to Home (with Rest)")) {
-                                    matchupKey = `${awayType} vs Home to Home`;
-                                } else if ((awayType === "Home to Away" || awayType === "Away to Away") && homeType === "Away to Home") {
-                                    matchupKey = `${awayType} vs ${homeType}`;
-                                } else {
-                                    matchupKey = `${awayType} vs ${homeType}`;
-                                }
-
+                                const matchupKey = `${pick.awayTravelType} vs ${pick.homeTravelType}`;
                                 if (!matchupGroups[matchupKey]) {
                                     matchupGroups[matchupKey] = [];
                                 }
@@ -739,36 +580,24 @@ function EnhancedPicksOfTheDay({
                             // Format each matchup group
                             Object.keys(matchupGroups).forEach(matchupKey => {
                                 const picks = matchupGroups[matchupKey];
-
-                                // Get stats for this matchup type (simplified for now)
-                                const awayStats = getTravelTypeStats(picks[0].awayTravelType);
-                                const homeStats = getTravelTypeStats(picks[0].homeTravelType);
+                                const awayStats = getTravelTypeStats(picks[0].awayTravelType, picks[0].homeTravelType);
+                                const homeStats = getTravelTypeStats(picks[0].homeTravelType, picks[0].awayTravelType);
 
                                 message += `${matchupKey} [${awayStats.wins}-${awayStats.losses}] vs [${homeStats.wins}-${homeStats.losses}]:\n`;
 
                                 picks.forEach(pick => {
                                     const awayTeam = pick.awayTeam?.name || "Away";
                                     const homeTeam = pick.homeTeam?.name || "Home";
-
-                                    // Use placeholder odds since we don't have real betting odds
                                     message += `${awayTeam} [+125] @ ${homeTeam} [-145]\n`;
                                 });
                                 message += "\n";
                             });
                         }
 
-                        // Add other picks if available
+                        // Add sweep picks if available
                         if (sortedPicks.sweep && sortedPicks.sweep.length > 0) {
                             message += "**Fade the Sweep Picks:**\n";
                             sortedPicks.sweep.forEach(pick => {
-                                message += `${pick.recommendedBet || "Unknown"}\n`;
-                            });
-                            message += "\n";
-                        }
-
-                        if (sortedPicks.rockies && sortedPicks.rockies.length > 0) {
-                            message += "**Fade the Rockies Picks:**\n";
-                            sortedPicks.rockies.forEach(pick => {
                                 message += `${pick.recommendedBet || "Unknown"}\n`;
                             });
                         }
@@ -787,34 +616,17 @@ function EnhancedPicksOfTheDay({
             </div>
 
             {picksLoading ? (
-                <div className="loading">Loading picks of the day...</div>
+                <div className="loading">Loading picks...</div>
             ) : (
-                <div className="picks-columns-container">
+                <div className="picks-grid">
                     <div className="pick-column">
-                        <h3>Travel Advantage Picks ({sortedPicks.travel?.length || 0})</h3>
+                        <h3>Travel Picks ({sortedPicks.travel?.length || 0})</h3>
                         {sortedPicks.travel && sortedPicks.travel.length > 0 ? (
                             <div className="picks-list">
                                 {sortedPicks.travel.map(pick => renderTravelPickCard(pick))}
                             </div>
                         ) : (
-                            <div className="no-picks">
-                                No travel advantage picks available for today.
-                                {picksOfTheDay?.travel?.length > 0 &&
-                                    <div>
-                                        <strong>Data issue detected</strong>: {picksOfTheDay.travel.length} picks are available but not being displayed.
-                                    </div>
-                                }
-                                {scheduleData && scheduleData.length > 0 && sortedPicks.travel?.length === 0 &&
-                                    <div>
-                                        <button
-                                            className="generate-picks-button"
-                                            onClick={() => refreshAll()}
-                                        >
-                                            Auto-detect Travel Advantage Picks
-                                        </button>
-                                    </div>
-                                }
-                            </div>
+                            <div className="no-picks">No travel picks available for today.</div>
                         )}
                     </div>
 
@@ -825,32 +637,7 @@ function EnhancedPicksOfTheDay({
                                 {sortedPicks.sweep.map(pick => renderSweepPickCard(pick))}
                             </div>
                         ) : (
-                            <div className="no-picks">
-                                No fade the sweep picks available for today.
-                                {picksOfTheDay?.sweep?.length > 0 &&
-                                    <div>
-                                        <strong>Data issue detected</strong>: {picksOfTheDay.sweep.length} picks are available but not being displayed.
-                                    </div>
-                                }
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="pick-column">
-                        <h3>Fade The Rockies Picks ({sortedPicks.rockies?.length || 0})</h3>
-                        {sortedPicks.rockies && sortedPicks.rockies.length > 0 ? (
-                            <div className="picks-list">
-                                {sortedPicks.rockies.map(pick => renderRockiesPickCard(pick))}
-                            </div>
-                        ) : (
-                            <div className="no-picks">
-                                Rockies are not playing today.
-                                {picksOfTheDay?.rockies?.length > 0 &&
-                                    <div>
-                                        <strong>Data issue detected</strong>: {picksOfTheDay.rockies.length} picks are available but not being displayed.
-                                    </div>
-                                }
-                            </div>
+                            <div className="no-picks">No sweep opportunities today.</div>
                         )}
                     </div>
                 </div>

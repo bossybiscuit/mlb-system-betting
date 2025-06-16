@@ -1,0 +1,150 @@
+.pick-scroller-container {
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 30px;
+    border: 1px solid #444;
+}
+
+.pick-scroller-header {
+    margin-bottom: 15px;
+}
+
+.pick-scroller-header h3 {
+    color: #e0e0e0;
+    margin: 0;
+    font-size: 1.2rem;
+    border-bottom: 2px solid #2196f3;
+    padding-bottom: 8px;
+}
+
+.pick-scroller {
+    position: relative;
+    overflow: hidden;
+    padding: 10px 0;
+}
+
+.pick-scroller-track {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 5px;
+    scrollbar-width: thin;
+    scrollbar-color: #444 #2a2a2a;
+}
+
+.pick-scroller-track::-webkit-scrollbar {
+    height: 8px;
+}
+
+.pick-scroller-track::-webkit-scrollbar-track {
+    background: #2a2a2a;
+    border-radius: 4px;
+}
+
+.pick-scroller-track::-webkit-scrollbar-thumb {
+    background-color: #444;
+    border-radius: 4px;
+}
+
+.pick-scroller-track::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+.pick-scroller-card {
+    flex: 0 0 300px;
+    background-color: #333;
+    border-radius: 6px;
+    padding: 12px;
+    border: 1px solid #444;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.pick-scroller-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.pick-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.recommended-bet {
+    color: #2196f3;
+    font-size: 0.95rem;
+}
+
+.strategy-icon {
+    font-size: 1.2rem;
+}
+
+.pick-card-matchup {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.team-name {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.travel-type {
+    font-size: 0.8rem;
+    color: #b0b0b0;
+}
+
+.vs {
+    color: #b0b0b0;
+    margin: 0 10px;
+}
+
+.pick-card-footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #b0b0b0;
+}
+
+.pick-scroller-loading,
+.pick-scroller-empty {
+    text-align: center;
+    padding: 20px;
+    color: #b0b0b0;
+    font-style: italic;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .pick-scroller-card {
+        flex: 0 0 260px;
+    }
+
+    .pick-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .strategy-icon {
+        align-self: flex-end;
+    }
+
+    .team-name {
+        font-size: 0.9rem;
+    }
+
+    .travel-type {
+        font-size: 0.75rem;
+    }
+} 

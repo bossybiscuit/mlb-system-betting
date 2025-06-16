@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { format, parseISO, differenceInDays } from 'date-fns';
 import axios from 'axios';
+import PickScroller from './PickScroller';
 import './TrendsTab.css';
 
 
-function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleSeasonYearChange }) {
+function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleSeasonYearChange, picksOfTheDay, picksLoading }) {
     const [showAllGames, setShowAllGames] = useState(false);
     const [selectedType, setSelectedType] = useState(null);
     const [selectedComparison, setSelectedComparison] = useState(null);
@@ -690,6 +691,11 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
 
     return (
         <div className="trends-tab">
+            <PickScroller 
+                picks={picksOfTheDay?.travel || []} 
+                loading={picksLoading} 
+            />
+            
             <div className="season-controls">
                 <div className="year-select">
                     <label htmlFor="season-year">MLB Season:</label>

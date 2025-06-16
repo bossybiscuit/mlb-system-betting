@@ -1,56 +1,32 @@
-/* Enhanced Picks Styles - Hybrid Mode */
+/* Enhanced Picks of the Day Styles */
 
-/* ------ Dark Mode for Container/Tabs ------ */
-body {
-    background-color: #121212;
+.enhanced-picks-container {
     color: #e0e0e0;
-}
-
-.picks-of-the-day {
-    background-color: #1e1e1e;
-    padding: 20px;
-    border-radius: 10px;
 }
 
 .picks-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #333;
 }
 
 .picks-header h2 {
+    color: #2196f3;
     margin: 0;
-    color: #e0e0e0;
+    font-size: 1.8rem;
 }
 
-/* ------ Main Layout Styles ------ */
-.picks-columns-container {
+.picks-actions {
     display: flex;
-    gap: 20px;
-    width: 100%;
+    gap: 10px;
 }
 
-.pick-column {
-    flex: 1;
-    min-width: 0;
-}
-
-/* ------ Column Heading Styles (Dark) ------ */
-.pick-column h3 {
-    border-bottom: 2px solid #2196f3;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #e0e0e0;
-}
-
-/* ------ Button Styles ------ */
 .refresh-button {
     padding: 8px 16px;
-    background-color: #4a66f5;
+    background-color: #2196f3;
     color: white;
     border: none;
     border-radius: 4px;
@@ -60,20 +36,46 @@ body {
 }
 
 .refresh-button:hover {
-    background-color: #3a56e5;
+    background-color: #1976d2;
 }
 
-/* Copy Message button */
 .copy-button {
-    margin-right: 10px;
-    background-color: #4CAF50;
+    background-color: #4caf50;
 }
 
 .copy-button:hover {
-    background-color: #3d8b40;
+    background-color: #388e3c;
 }
 
-/* ------ Card Styles (Light Mode) ------ */
+/* Picks Grid Layout */
+.picks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.pick-column {
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #444;
+}
+
+.pick-column h3 {
+    color: #e0e0e0;
+    margin: 0 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #2196f3;
+    font-size: 1.3rem;
+}
+
+.picks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Pick Card Styles */
 .pick-card {
     border-radius: 10px;
     overflow: hidden;
@@ -100,7 +102,7 @@ body {
     border: 2px solid #2196f3;
 }
 
-/* ------ Card Header Styles ------ */
+/* Card Header Styles */
 .pick-header {
     background-color: #f5f5f5;
     padding: 10px 12px;
@@ -110,7 +112,6 @@ body {
     border-bottom: 1px solid #ddd;
 }
 
-/* Pick recommendation in top left (replacing confidence) */
 .game-time-status {
     display: flex;
     align-items: center;
@@ -144,11 +145,7 @@ body {
     color: #9c27b0;
 }
 
-.strategy-icon.fade-rockies {
-    color: #ff9800;
-}
-
-/* ------ Team Matchup Styles ------ */
+/* Team Matchup Styles */
 .matchup {
     padding: 15px 10px;
     background-color: #f9f9f9;
@@ -183,18 +180,14 @@ body {
     margin: 0 5px;
 }
 
-/* Team colors (can be overridden with inline styles) */
 .away-team {
     color: #D50032;
-    /* MLB red */
 }
 
 .home-team {
     color: #002D72;
-    /* MLB blue */
 }
 
-/* Team travel labels */
 .team-travel-label {
     font-size: 12px;
     color: #666;
@@ -202,17 +195,10 @@ body {
     margin-top: 2px;
 }
 
-/* ------ Card Details Styles ------ */
+/* Card Details Styles */
 .pick-details {
     padding: 15px;
     color: #333;
-    /* Ensure text is dark in the light mode cards */
-}
-
-/* Clean up old pick-centered styles since we moved it to the header */
-.recommended-bet-container,
-.recommended-bet-highlight {
-    display: none;
 }
 
 .reason {
@@ -223,7 +209,6 @@ body {
     font-size: 14px;
 }
 
-/* Toggle button */
 .detail-toggle-button {
     background-color: #f0f2f5;
     border: 1px solid #ddd;
@@ -242,7 +227,7 @@ body {
     background-color: #e0e0e0;
 }
 
-/* ------ Expanded Details Styles ------ */
+/* Expanded Details */
 .expanded-details {
     margin-top: 15px;
     padding-top: 15px;
@@ -250,22 +235,8 @@ body {
     animation: fadeIn 0.3s ease-in-out;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Analysis sections */
 .travel-analysis,
-.sweep-analysis,
-.rockies-analysis {
+.sweep-analysis {
     background-color: #f9f9f9;
     padding: 15px;
     border-radius: 6px;
@@ -276,13 +247,8 @@ body {
     border-left-color: #9c27b0;
 }
 
-.rockies-analysis {
-    border-left-color: #ff9800;
-}
-
 .travel-analysis h4,
-.sweep-analysis h4,
-.rockies-analysis h4 {
+.sweep-analysis h4 {
     margin-top: 0;
     color: #333;
     font-size: 16px;
@@ -290,8 +256,7 @@ body {
 }
 
 .travel-analysis p,
-.sweep-analysis p,
-.rockies-analysis p {
+.sweep-analysis p {
     margin-bottom: 15px;
     line-height: 1.5;
     color: #444;
@@ -308,8 +273,7 @@ body {
     color: #333;
 }
 
-.sweep-stats,
-.rockies-context {
+.sweep-stats {
     background-color: #fff;
     border: 1px solid #eee;
     border-radius: 4px;
@@ -366,7 +330,7 @@ body {
     color: #c62828;
 }
 
-/* ------ Card Footer Styles ------ */
+/* Card Footer Styles */
 .pick-footer {
     background-color: #f5f5f5;
     padding: 8px 12px;
@@ -387,42 +351,45 @@ body {
     font-style: italic;
 }
 
-/* ------ State Styles (Dark for Empty State) ------ */
+/* Loading and No Picks States */
+.loading,
 .no-picks {
-    background-color: #333333;
-    padding: 15px;
     text-align: center;
-    border-radius: 5px;
-    border: 1px dashed #555;
+    padding: 40px;
+    background-color: #2a2a2a;
+    border-radius: 8px;
     color: #b0b0b0;
+    border: 1px solid #444;
 }
 
-.loading {
-    padding: 20px;
-    text-align: center;
-    background-color: #333333;
-    border-radius: 5px;
-    margin: 20px 0;
-    font-style: italic;
-    color: #b0b0b0;
-}
-
-/* ------ Responsive Styles ------ */
+/* Responsive Design */
 @media (max-width: 768px) {
-    .picks-columns-container {
+    .picks-header {
         flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
     }
 
-    .pick-column {
+    .picks-actions {
         width: 100%;
-        margin-bottom: 20px;
+        justify-content: flex-end;
     }
 
-    .stats-comparison {
+    .picks-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .matchup {
         flex-direction: column;
+        align-items: stretch;
     }
 
-    .stat-column {
-        margin-bottom: 10px;
+    .team-container {
+        justify-content: center;
+    }
+
+    .versus {
+        text-align: center;
+        margin: 5px 0;
     }
 }
