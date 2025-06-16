@@ -370,37 +370,6 @@ function EnhancedPicksOfTheDay({
                     </div>
                 </div>
 
-                <div className="pick-details">
-                    {/* Remove the centered pick recommendation since it's now in the header */}
-
-                    <button
-                        className="detail-toggle-button"
-                        onClick={() => toggleExpandPick(pick.gamePk, 'travel')}
-                    >
-                        {isExpanded ? 'Hide Analysis' : 'Show Analysis'}
-                    </button>
-
-                    {isExpanded && (
-                        <div className="expanded-details">
-                            <div className="travel-analysis">
-                                <h4>Travel Analysis</h4>
-
-                                {/* Update the travel type comparison to use matchup stats */}
-                                <div className="travel-type-comparison">
-                                    <strong>
-                                        {pick.awayTravelType || "Away Travel"} [{getTravelTypeStats(pick.awayTravelType, pick.homeTravelType).wins}-{getTravelTypeStats(pick.awayTravelType, pick.homeTravelType).losses}] vs {pick.homeTravelType || "Home Travel"} [{getTravelTypeStats(pick.homeTravelType, pick.awayTravelType).wins}-{getTravelTypeStats(pick.homeTravelType, pick.awayTravelType).losses}]
-                                    </strong>
-                                </div>
-
-                                <p>
-                                    {pick.explanation ||
-                                        `${pick.homeTeam?.name || "Home Team"} has a travel advantage over ${pick.awayTeam?.name || "Away Team"} based on their travel patterns.`}
-                                </p>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
                 <div className="pick-footer">
                     <span className="game-time">{pick.gameTime || 'Time TBD'}</span>
                     <span className="venue">{pick.venue || 'Venue TBD'}</span>
@@ -558,7 +527,7 @@ function EnhancedPicksOfTheDay({
     return (
         <div className="enhanced-picks-container">
             <div className="picks-header">
-                <h2>Today's Picks</h2>
+                <h2>Today's Free Picks</h2>
                 <div className="picks-actions">
                     <button className="refresh-button copy-button" onClick={() => {
                         let message = "MLB System Betting Picks\n\n";
@@ -566,37 +535,13 @@ function EnhancedPicksOfTheDay({
                         // Add travel picks if available
                         if (sortedPicks.travel && sortedPicks.travel.length > 0) {
                             message += "**Travel Picks:**\n";
-                            
-                            // Group by matchup type
-                            const matchupGroups = {};
                             sortedPicks.travel.forEach(pick => {
-                                const matchupKey = `${pick.awayTravelType} vs ${pick.homeTravelType}`;
-                                if (!matchupGroups[matchupKey]) {
-                                    matchupGroups[matchupKey] = [];
-                                }
-                                matchupGroups[matchupKey].push(pick);
-                            });
-
-                            // Format each matchup group
-                            Object.keys(matchupGroups).forEach(matchupKey => {
-                                const picks = matchupGroups[matchupKey];
-                                const awayStats = getTravelTypeStats(picks[0].awayTravelType, picks[0].homeTravelType);
-                                const homeStats = getTravelTypeStats(picks[0].homeTravelType, picks[0].awayTravelType);
-
-                                message += `${matchupKey} [${awayStats.wins}-${awayStats.losses}] vs [${homeStats.wins}-${homeStats.losses}]:\n`;
-
-                                picks.forEach(pick => {
-                                    const awayTeam = pick.awayTeam?.name || "Away";
-                                    const homeTeam = pick.homeTeam?.name || "Home";
-                                    message += `${awayTeam} [+125] @ ${homeTeam} [-145]\n`;
-                                });
-                                message += "\n";
+                                message += `${pick.recommendedBet || "Unknown"}\n`;
                             });
                         }
 
-                        // Add sweep picks if available
                         if (sortedPicks.sweep && sortedPicks.sweep.length > 0) {
-                            message += "**Fade the Sweep Picks:**\n";
+                            message += "\n**Fade the Sweep Picks:**\n";
                             sortedPicks.sweep.forEach(pick => {
                                 message += `${pick.recommendedBet || "Unknown"}\n`;
                             });
@@ -604,10 +549,10 @@ function EnhancedPicksOfTheDay({
 
                         // Copy to clipboard
                         navigator.clipboard.writeText(message)
-                            .then(() => alert("Travel report copied to clipboard!"))
+                            .then(() => alert("Picks copied to clipboard!"))
                             .catch(err => console.error("Failed to copy: ", err));
                     }}>
-                        Copy Travel Report
+                        Copy Picks
                     </button>
                     <button className="refresh-button" onClick={refreshAll}>
                         Refresh Data
@@ -618,8 +563,9 @@ function EnhancedPicksOfTheDay({
             {picksLoading ? (
                 <div className="loading">Loading picks...</div>
             ) : (
-                <div className="picks-grid">
-                    <div className="pick-column">
+                <div className="picks-rows">
+                    {/* Travel Picks Row */}
+                    <div className="pick-row">
                         <h3>Travel Picks ({sortedPicks.travel?.length || 0})</h3>
                         {sortedPicks.travel && sortedPicks.travel.length > 0 ? (
                             <div className="picks-list">
@@ -630,8 +576,9 @@ function EnhancedPicksOfTheDay({
                         )}
                     </div>
 
-                    <div className="pick-column">
-                        <h3>Fade The Sweep Picks ({sortedPicks.sweep?.length || 0})</h3>
+                    {/* Fade the Sweep Row */}
+                    <div className="pick-row">
+                        <h3>Fade the Sweep ({sortedPicks.sweep?.length || 0})</h3>
                         {sortedPicks.sweep && sortedPicks.sweep.length > 0 ? (
                             <div className="picks-list">
                                 {sortedPicks.sweep.map(pick => renderSweepPickCard(pick))}
@@ -639,6 +586,18 @@ function EnhancedPicksOfTheDay({
                         ) : (
                             <div className="no-picks">No sweep opportunities today.</div>
                         )}
+                    </div>
+
+                    {/* K-Rate Unders Row */}
+                    <div className="pick-row">
+                        <h3>K-Rate Unders (0)</h3>
+                        <div className="no-picks">No K-Rate Under picks available for today.</div>
+                    </div>
+
+                    {/* Pitching Out Projections Row */}
+                    <div className="pick-row">
+                        <h3>Pitching Out Projections (0)</h3>
+                        <div className="no-picks">No Pitching Out Projections available for today.</div>
                     </div>
                 </div>
             )}

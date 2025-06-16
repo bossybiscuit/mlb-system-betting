@@ -9,6 +9,7 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
     const [showAllGames, setShowAllGames] = useState(false);
     const [selectedType, setSelectedType] = useState(null);
     const [selectedComparison, setSelectedComparison] = useState(null);
+    const [selectedTeam, setSelectedTeam] = useState('');
     const [seasonStats, setSeasonStats] = useState({
         byType: {
             'Home to Away': { wins: 0, losses: 0, total: 0, percentage: 0 },
@@ -565,28 +566,50 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
         setMatchupStats(stats);
     };
 
-    // Get the appropriate list of games based on the selected type or comparison
+    // Get unique teams from the games list
+    const getUniqueTeams = () => {
+        const teamsMap = new Map();  // Using Map to ensure uniqueness by team ID
+        seasonGamesList.forEach(game => {
+            if (!teamsMap.has(game.teamId)) {
+                teamsMap.set(game.teamId, { id: game.teamId, name: game.team });
+            }
+            if (!teamsMap.has(game.opponentId)) {
+                teamsMap.set(game.opponentId, { id: game.opponentId, name: game.opponent });
+            }
+        });
+        return Array.from(teamsMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+    };
+
+    // Update getFilteredGames to include team filtering
     const getFilteredGames = () => {
+        let filtered = seasonGamesList;
+        
+        // Apply travel type/comparison filters first
         if (selectedComparison) {
-            return matchupStats[selectedComparison]?.games || [];
+            filtered = matchupStats[selectedComparison]?.games || [];
         } else if (selectedType) {
             if (selectedType === 'Home to Home (no Rest)' || selectedType === 'Home to Home (with Rest)') {
-                // For Home to Home types, only show games against Away to Away or Home to Away
-                return seasonGamesList.filter(game =>
+                filtered = filtered.filter(game =>
                     game.travelType === selectedType &&
                     (game.opponentTravel === 'Away to Away' || game.opponentTravel === 'Home to Away')
                 );
             } else if (selectedType === 'Away to Away') {
-                // For Away to Away, only show games where the team actually traveled between different venues
-                return seasonGamesList.filter(game =>
+                filtered = filtered.filter(game =>
                     game.travelType === 'Away to Away' && game.travelType !== 'Away to Away (Same Venue)'
                 );
             } else {
-                return seasonGamesList.filter(game => game.travelType === selectedType);
+                filtered = filtered.filter(game => game.travelType === selectedType);
             }
-        } else {
-            return seasonGamesList;
         }
+
+        // Then apply team filter if a team is selected
+        if (selectedTeam) {
+            filtered = filtered.filter(game => 
+                game.teamId === Number(selectedTeam) || game.opponentId === Number(selectedTeam)
+            );
+        }
+
+        return filtered;
     };
 
     const filteredGames = getFilteredGames();
@@ -660,11 +683,17 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
         };
     });
 
-    // Clear all selections
+    // Clear all selections including team filter
     const clearSelections = () => {
         setSelectedType(null);
         setSelectedComparison(null);
         setShowAllGames(false);
+        setSelectedTeam('');  // Reset to empty string
+    };
+
+    // Handle team selection change
+    const handleTeamSelectionChange = (event) => {
+        setSelectedTeam(event.target.value);
     };
 
     // Get the result class for a game card
@@ -695,6 +724,20 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
                 picks={picksOfTheDay?.travel || []} 
                 loading={picksLoading} 
             />
+
+            <div className="trends-section">
+                <h2>Analysis</h2>
+                <div className="analysis-content">
+                    <p>
+                        This analysis compares team performance across different travel scenarios for the {seasonYear} MLB season.
+                        The data shows how teams perform when traveling and how home teams perform against traveling opponents.
+                    </p>
+                    
+                    <p>
+                        You can use this data to identify potential betting opportunities by understanding how travel affects team performance in MLB games.
+                    </p>
+                </div>
+            </div>
             
             <div className="season-controls">
                 <div className="year-select">
@@ -801,17 +844,32 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
                         </div>
                     </div>
 
-                    {(selectedType || selectedComparison) && (
+                    {(selectedType || selectedComparison || selectedTeam) && (
                         <div className="trends-section">
                             <div className="section-header">
                                 <h2>
-                                    {selectedComparison ? `${selectedComparison} Games` : `${selectedType} Games`}
-                                    <button
-                                        className="clear-filter-button"
-                                        onClick={clearSelections}
-                                    >
-                                        Clear Filter
-                                    </button>
+                                    {selectedComparison ? `${selectedComparison} Games` : 
+                                     selectedType ? `${selectedType} Games` : 'Filtered Games'}
+                                    <div className="filter-controls">
+                                        <select
+                                            className="team-filter-select"
+                                            value={selectedTeam}
+                                            onChange={handleTeamSelectionChange}
+                                        >
+                                            <option value="">Select a Team</option>
+                                            {getUniqueTeams().map(team => (
+                                                <option key={team.id} value={team.id}>
+                                                    {team.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <button
+                                            className="clear-filter-button"
+                                            onClick={clearSelections}
+                                        >
+                                            Clear Filters
+                                        </button>
+                                    </div>
                                 </h2>
                             </div>
 
@@ -855,6 +913,9 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
                                                                     <span className="team-travel-label">
                                                                         {awayTravelType}
                                                                     </span>
+                                                                    <div className={`game-result ${awayTeamWon ? 'win' : 'loss'}`}>
+                                                                    {awayTeamWon ? 'Won' : 'Lost'}
+                                                                </div>
                                                                 </div>
 
                                                                 <span className="versus">@</span>
@@ -871,30 +932,12 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
                                                                     <span className="team-travel-label">
                                                                         {homeTravelType}
                                                                     </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="game-details">
-                                                            <div className={`team-travel-info ${getTravelTypeClass(awayTravelType)}`}>
-                                                                <div className="team-name">{awayTeamName} (Away):</div>
-                                                                <div>Travel: {awayTravelType}</div>
-                                                                <div className={`game-result ${awayTeamWon ? 'win' : 'loss'}`}>
-                                                                    {awayTeamWon ? 'Won' : 'Lost'}
-                                                                </div>
-                                                            </div>
-
-                                                            <div className={`team-travel-info ${getTravelTypeClass(homeTravelType)}`}>
-                                                                <div className="team-name">{homeTeamName} (Home):</div>
-                                                                <div>Travel: {homeTravelType}</div>
-                                                                <div className={`game-result ${homeTeamWon ? 'win' : 'loss'}`}>
+                                                                    <div className={`game-result ${homeTeamWon ? 'win' : 'loss'}`}>
                                                                     {homeTeamWon ? 'Won' : 'Lost'}
                                                                 </div>
+                                                                </div>
+                                                                
                                                             </div>
-                                                        </div>
-
-                                                        <div className="game-footer">
-                                                            <span className="venue">{game.venue}</span>
                                                         </div>
                                                     </div>
                                                 );
@@ -919,36 +962,7 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
                         </div>
                     )}
 
-                    <div className="trends-section">
-                        <h2>Analysis</h2>
-                        <div className="analysis-content">
-                            <p>
-                                This analysis compares team performance across different travel scenarios for the {seasonYear} MLB season starting from March 27.
-                                The data shows how teams perform when traveling and how rested home teams perform against traveling opponents.
-                            </p>
-                            <p>
-                                <strong>Key Insights:</strong>
-                            </p>
-                            <ul>
-                                {travelTypes
-                                    .filter(type => seasonStats.byType[type].total > 0)
-                                    .sort((a, b) => parseFloat(seasonStats.byType[b].percentage) - parseFloat(seasonStats.byType[a].percentage))
-                                    .map(type => (
-                                        <li key={type}>
-                                            {type === 'Home to Home (with Rest)'
-                                                ? `Teams playing at home after a rest day against traveling teams have a ${seasonStats.byType[type].percentage}% win rate (${seasonStats.byType[type].wins}-${seasonStats.byType[type].losses} record) over ${seasonStats.byType[type].total} games.`
-                                                : type === 'Home to Home (no Rest)'
-                                                    ? `Teams playing consecutive home games without rest against traveling teams have a ${seasonStats.byType[type].percentage}% win rate (${seasonStats.byType[type].wins}-${seasonStats.byType[type].losses} record) over ${seasonStats.byType[type].total} games.`
-                                                    : `Teams playing ${type} games have a ${seasonStats.byType[type].percentage}% win rate (${seasonStats.byType[type].wins}-${seasonStats.byType[type].losses} record) over ${seasonStats.byType[type].total} games.`
-                                            }
-                                        </li>
-                                    ))}
-                            </ul>
-                            <p>
-                                You can use this data to identify potential betting opportunities by understanding how travel affects team performance in MLB games.
-                            </p>
-                        </div>
-                    </div>
+
                 </>
             )}
         </div>

@@ -73,33 +73,91 @@
 }
 
 .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    width: 100%;
     margin-bottom: 20px;
+    border-bottom: none;
 }
 
 .section-header h2 {
     display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    font-size: 1.5rem;
+    color: #ffffff;
+}
+
+.filter-controls {
+    display: flex;
     align-items: center;
     gap: 15px;
-    margin: 0;
+    margin-left: auto;
+}
+
+.team-filter-select {
+    min-width: 200px;
+    max-width: 300px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    color: #ffffff;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+    padding-right: 32px;
+}
+
+.team-filter-select:hover {
+    border-color: #666;
+    background-color: #333;
+}
+
+.team-filter-select:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+    background-color: #333;
+}
+
+.team-filter-select option {
+    padding: 8px;
+    background-color: #2a2a2a;
+    color: #ffffff;
+}
+
+.team-filter-select option:first-child {
+    color: #888;
+}
+
+.team-filter-select option:not(:first-child):hover {
+    background-color: #444;
 }
 
 .clear-filter-button {
+    padding: 8px 16px;
     background-color: #444;
-    border: 1px solid #666;
-    color: #e0e0e0;
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 14px;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s;
-    margin-left: 15px;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
 }
 
 .clear-filter-button:hover {
     background-color: #555;
+}
+
+.clear-filter-button:active {
+    background-color: #666;
 }
 
 /* ------ Stats Table ------ */
@@ -281,7 +339,7 @@
 }
 
 .game-header {
-    background-color: #333;
+    background-color: #f5f5f5;
     padding: 10px 12px;
     display: flex;
     justify-content: space-between;
@@ -409,7 +467,7 @@
 
 /* Game Footer */
 .game-footer {
-    background-color: #333;
+    background-color: #f5f5f5;
     padding: 8px 12px 10px 12px;
     border-top: 1px solid #444;
     text-align: right;
@@ -741,10 +799,18 @@
         grid-template-columns: 1fr;
     }
 
-    .section-header {
+    .section-header h2 {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
+        font-size: 1.2rem;
+    }
+
+    .filter-controls {
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        margin-left: 0;
     }
 
     .comparison-actions {
@@ -768,6 +834,19 @@
     .team-logo {
         width: 35px;
         height: 35px;
+    }
+
+    .team-filter-select {
+        width: 100%;
+        max-width: none;
+        font-size: 0.85rem;
+        padding: 10px 32px 10px 12px;
+    }
+
+    .clear-filter-button {
+        width: 100%;
+        padding: 10px;
+        font-size: 0.85rem;
     }
 }
 
