@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { format, parseISO, isToday, addDays, subDays, isSameDay } from 'date-fns';
+import { fetchOdds, formatOdds } from '../services/oddsApi';
 import './FadeTheRockiesTab.css';
 
 function FadeTheRockiesTab() {
@@ -17,6 +18,7 @@ function FadeTheRockiesTab() {
     });
     const [showHistorical, setShowHistorical] = useState(true); // Always true now
     const [error, setError] = useState(null);
+    const [oddsData, setOddsData] = useState({});
 
     // Constants
     const ROCKIES_TEAM_ID = 115; // MLB API ID for Colorado Rockies
@@ -231,6 +233,33 @@ function FadeTheRockiesTab() {
         });
     };
 
+    const handleFetchOdds = async () => {
+        if (!rockiesGames || rockiesGames.length === 0) return;
+        const gameIds = rockiesGames
+            .filter(game => isToday(new Date(`${game.date}T12:00:00`)))
+            .map(game => game.gamePk);
+        if (gameIds.length > 0) {
+            const odds = await fetchOdds(rockiesGames.filter(game => gameIds.includes(game.gamePk)));
+            setOddsData(odds);
+        }
+    };
+
+    // Helper function to get odds for a game
+    const getGameOdds = (game) => {
+        if (!game || !game.gamePk || !oddsData[game.gamePk]) return '';
+        
+        const gameOdds = oddsData[game.gamePk];
+        const teamName = game.opponent.name;
+        
+        if (gameOdds.homeTeam.name === teamName) {
+            return formatOdds(gameOdds.homeTeam.odds);
+        } else if (gameOdds.awayTeam.name === teamName) {
+            return formatOdds(gameOdds.awayTeam.odds);
+        }
+        
+        return '';
+    };
+
     const refreshData = () => {
         fetchCurrentData();
         fetchHistoricalData();
@@ -243,6 +272,9 @@ function FadeTheRockiesTab() {
                 <div className="fade-actions">
                     <button className="refresh-button" onClick={refreshData}>
                         Refresh Data
+                    </button>
+                    <button className="refresh-button" onClick={handleFetchOdds}>
+                        Fetch Odds
                     </button>
                 </div>
             </div>
@@ -276,7 +308,7 @@ function FadeTheRockiesTab() {
                                     </div>
                                     <div className="pick-details">
                                         <div className="recommended-bet">
-                                            <strong>Pick:</strong> {game.opponent.name} -1.5
+                                            <strong>Pick:</strong> {game.opponent.name} -1.5 {getGameOdds(game)}
                                         </div>
                                         <div className="status">
                                             {game.status === "Scheduled" && game.gameTime ?

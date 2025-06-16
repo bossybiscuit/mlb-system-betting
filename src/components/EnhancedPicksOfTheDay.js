@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
+import { fetchOdds, formatOdds } from '../services/oddsApi';
 
 function EnhancedPicksOfTheDay({
     picksOfTheDay,
@@ -14,6 +15,7 @@ function EnhancedPicksOfTheDay({
         travel: [],
         sweep: []
     });
+    const [oddsData, setOddsData] = useState({});
 
     // Enhanced debug logging for data inspection
     useEffect(() => {
@@ -110,6 +112,19 @@ function EnhancedPicksOfTheDay({
             console.log(`Found ${todayGames.length} games for today`);
         }
     }, [scheduleData]);
+
+    // Fetch odds when picks change
+    const handleFetchOdds = async () => {
+        if (!picksOfTheDay) return;
+        const picks = [
+            ...(picksOfTheDay.travel || []),
+            ...(picksOfTheDay.sweep || [])
+        ];
+        if (picks.length > 0) {
+            const odds = await fetchOdds(picks);
+            setOddsData(odds);
+        }
+    };
 
     // Function to check if a pick is expanded
     const isPickExpanded = (gamePk, pickType) => {
@@ -293,6 +308,24 @@ function EnhancedPicksOfTheDay({
         }
     };
 
+    // Helper function to get odds for a pick
+    const getPickOdds = (pick) => {
+        if (!pick || !pick.gamePk || !oddsData[pick.gamePk]) {
+            console.log('No odds for pick:', pick);
+            return '';
+        }
+        const gameOdds = oddsData[pick.gamePk];
+        const teamName = pick.recommendedBet;
+        let odds = '';
+        if (gameOdds.homeTeam.name === teamName) {
+            odds = formatOdds(gameOdds.homeTeam.odds);
+        } else if (gameOdds.awayTeam.name === teamName) {
+            odds = formatOdds(gameOdds.awayTeam.odds);
+        }
+        console.log('Odds for pick:', pick, '->', odds);
+        return odds;
+    };
+
     // Render a travel pick card
     const renderTravelPickCard = (pick) => {
         if (!pick || !pick.gamePk) {
@@ -318,9 +351,8 @@ function EnhancedPicksOfTheDay({
             <div className={`pick-card ${isExpanded ? 'expanded' : ''} has-strategy`} key={pick.gamePk}>
                 <div className="pick-header">
                     <div className="game-time-status">
-                        {/* Move pick to header left */}
                         <div className="recommended-bet-highlight-header">
-                            <strong>Pick:</strong> {pick.recommendedBet || "Unknown"}
+                            {pick.recommendedBet} ({getPickOdds(pick)})
                         </div>
                     </div>
                     <div className="strategy-indicators">
@@ -424,9 +456,8 @@ function EnhancedPicksOfTheDay({
             <div className={`pick-card ${isExpanded ? 'expanded' : ''} has-strategy`} key={pick.gamePk}>
                 <div className="pick-header">
                     <div className="game-time-status">
-                        {/* Move pick to header left */}
                         <div className="recommended-bet-highlight-header">
-                            <strong>Pick:</strong> {pick.recommendedBet || "Unknown"}
+                            <strong>Pick:</strong> {pick.recommendedBet} {getPickOdds(pick)}
                         </div>
                     </div>
                     <div className="strategy-indicators">
@@ -557,6 +588,9 @@ function EnhancedPicksOfTheDay({
                     <button className="refresh-button" onClick={refreshAll}>
                         Refresh Data
                     </button>
+                    <button className="refresh-button" onClick={handleFetchOdds}>
+                        Fetch Odds
+                    </button>
                 </div>
             </div>
 
@@ -569,7 +603,12 @@ function EnhancedPicksOfTheDay({
                         <h3>Travel Picks ({sortedPicks.travel?.length || 0})</h3>
                         {sortedPicks.travel && sortedPicks.travel.length > 0 ? (
                             <div className="picks-list">
-                                {sortedPicks.travel.map(pick => renderTravelPickCard(pick))}
+                                {sortedPicks.travel
+                                    .filter(pick =>
+                                        pick.homeTravelType === 'Home to Home (no Rest)' ||
+                                        pick.homeTravelType === 'Home to Home (with Rest)'
+                                    )
+                                    .map(pick => renderTravelPickCard(pick))}
                             </div>
                         ) : (
                             <div className="no-picks">No travel picks available for today.</div>
@@ -601,6 +640,8 @@ function EnhancedPicksOfTheDay({
                     </div>
                 </div>
             )}
+
+            <pre>{JSON.stringify(oddsData, null, 2)}</pre>
         </div>
     );
 }

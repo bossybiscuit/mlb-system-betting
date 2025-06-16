@@ -830,13 +830,13 @@ function FadeTheSweepTab() {
                                 <div className="stat-box betting-stat">
                                     <div className="stat-value">${stats.totalProfit.toLocaleString()}</div>
                                     <div className="stat-label">Total Profit/Loss</div>
-                                </div>
-                                <div className="stat-box betting-stat">
+                                    <br></br>
                                     <div className="stat-value" style={{ color: stats.roi >= 0 ? '#2e7d32' : '#c62828' }}>
-                                        {stats.roi}%
-                                    </div>
-                                    <div className="stat-label">Return on Investment</div>
+                                            {stats.roi}%
+                                        </div>
+                                        <div className="stat-label">Return on Investment</div>
                                 </div>
+
                                 <div className="stat-box betting-stat">
                                     <div className="stat-value">{stats.averageOdds}</div>
                                     <div className="stat-label">Average Odds</div>

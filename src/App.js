@@ -1,7 +1,7 @@
 import React, {
   useState, useEffect
 } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, NavLink } from 'react-router-dom';
 import './App.css';
 import { format, parseISO, differenceInDays, subDays, addDays, isToday, parse } from 'date-fns';
 import axios from 'axios';
@@ -16,6 +16,7 @@ import './components/EnhancedPicksOfTheDay.css';
 import PitchingOutsPredictor from './components/PitchingOutsPredictor';
 import Navigation from './components/Navigation';
 import ProtectedRoute from './components/ProtectedRoute';
+import UserSettings from './pages/UserSettings';
 
 // Create a wrapper component for the main app content
 function MainApp() {
@@ -1049,6 +1050,8 @@ function MainApp() {
               fetchSchedule={fetchSchedule}
             />
           } />
+          
+          <Route path="/settings" element={<UserSettings />} />
           
           <Route path="/" element={<Navigate to="/picks" replace />} />
         </Routes>

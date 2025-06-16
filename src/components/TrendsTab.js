@@ -3,6 +3,7 @@ import { format, parseISO, differenceInDays } from 'date-fns';
 import axios from 'axios';
 import PickScroller from './PickScroller';
 import './TrendsTab.css';
+import { fetchOdds, formatOdds } from '../services/oddsApi';
 
 
 function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleSeasonYearChange, picksOfTheDay, picksLoading }) {
@@ -22,6 +23,7 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
     const [seasonGamesList, setSeasonGamesList] = useState([]);
     const [seasonHomeVsTravelGames, setSeasonHomeVsTravelGames] = useState([]);
     const [seasonLoading, setSeasonLoading] = useState(true);
+    const [oddsData, setOddsData] = useState({});
 
     // Direct matchup stats for comparison
     const [matchupStats, setMatchupStats] = useState({
@@ -29,8 +31,8 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
         'Away to Away vs Away to Home': { first: { wins: 0, losses: 0 }, second: { wins: 0, losses: 0 }, games: [] },
         'Home to Away vs Home to Home (no Rest)': { first: { wins: 0, losses: 0 }, second: { wins: 0, losses: 0 }, games: [] },
         'Away to Away vs Home to Home (no Rest)': { first: { wins: 0, losses: 0 }, second: { wins: 0, losses: 0 }, games: [] },
-        'Home to Away vs Home to Home (with Rest)': { first: { wins: 0, losses: 0 }, second: { wins: 0, losses: 0 }, games: [] },
-        'Away to Away vs Home to Home (with Rest)': { first: { wins: 0, losses: 0 }, second: { wins: 0, losses: 0 }, games: [] },
+        'Home to Away vs Home to Home (Rest)': { first: { wins: 0, losses: 0 }, second: { wins: 0, losses: 0 }, games: [] },
+        'Away to Away vs Home to Home (Rest)': { first: { wins: 0, losses: 0 }, second: { wins: 0, losses: 0 }, games: [] },
     });
 
     useEffect(() => {
@@ -315,7 +317,7 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
                         homeTeamRestDays = dayDiff - 1;
 
                         if (prevGame.isHome && homeTeamGames[homeGameIndex].isHome) {
-                            homeTeamTravelType = 'Home to Home (with Rest)';
+                            homeTeamTravelType = 'Home to Home (Rest)';
                             homeTeamHadToTravel = false;
                         } else {
                             // If there was a rest day, we don't classify it as a travel game
@@ -399,7 +401,7 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
                         isAwayFirst: true
                     });
                 }
-                else if (homeTeamTravelType === 'Home to Home (with Rest)' &&
+                else if (homeTeamTravelType === 'Home to Home (Rest)' &&
                     (awayTeamTravelType === 'Away to Away' || awayTeamTravelType === 'Home to Away')) {
                     directMatchups.push({
                         date: currentDate,
@@ -460,7 +462,7 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
             'Away to Away': { wins: 0, losses: 0, total: 0, percentage: 0 },
             'Away to Home': { wins: 0, losses: 0, total: 0, percentage: 0 },
             'Home to Home (no Rest)': { wins: 0, losses: 0, total: 0, percentage: 0 },
-            'Home to Home (with Rest)': { wins: 0, losses: 0, total: 0, percentage: 0 }
+            'Home to Home (Rest)': { wins: 0, losses: 0, total: 0, percentage: 0 }
         };
 
         // Process all games
@@ -509,8 +511,8 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
             'Away to Away vs Away to Home': { first: { wins: 0, losses: 0 }, second: { wins: 0, losses: 0 }, games: [] },
             'Home to Away vs Home to Home (no Rest)': { first: { wins: 0, losses: 0 }, second: { wins: 0, losses: 0 }, games: [] },
             'Away to Away vs Home to Home (no Rest)': { first: { wins: 0, losses: 0 }, second: { wins: 0, losses: 0 }, games: [] },
-            'Home to Away vs Home to Home (with Rest)': { first: { wins: 0, losses: 0 }, second: { wins: 0, losses: 0 }, games: [] },
-            'Away to Away vs Home to Home (with Rest)': { first: { wins: 0, losses: 0 }, second: { wins: 0, losses: 0 }, games: [] }
+            'Home to Away vs Home to Home (Rest)': { first: { wins: 0, losses: 0 }, second: { wins: 0, losses: 0 }, games: [] },
+            'Away to Away vs Home to Home (Rest)': { first: { wins: 0, losses: 0 }, second: { wins: 0, losses: 0 }, games: [] }
         };
 
         // For each game, find direct matchups
@@ -524,8 +526,8 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
                 ['Away to Away', 'Away to Home'],
                 ['Home to Away', 'Home to Home (no Rest)'],
                 ['Away to Away', 'Home to Home (no Rest)'],
-                ['Home to Away', 'Home to Home (with Rest)'],
-                ['Away to Away', 'Home to Home (with Rest)']
+                ['Home to Away', 'Home to Home (Rest)'],
+                ['Away to Away', 'Home to Home (Rest)']
             ];
 
             // Check if this game qualifies for any of our tracked matchups
@@ -588,7 +590,7 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
         if (selectedComparison) {
             filtered = matchupStats[selectedComparison]?.games || [];
         } else if (selectedType) {
-            if (selectedType === 'Home to Home (no Rest)' || selectedType === 'Home to Home (with Rest)') {
+            if (selectedType === 'Home to Home (no Rest)' || selectedType === 'Home to Home (Rest)') {
                 filtered = filtered.filter(game =>
                     game.travelType === selectedType &&
                     (game.opponentTravel === 'Away to Away' || game.opponentTravel === 'Home to Away')
@@ -623,7 +625,7 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
         'Away to Away',
         'Away to Home',
         'Home to Home (no Rest)',
-        'Home to Home (with Rest)'
+        'Home to Home (Rest)'
     ];
 
     // Predefined comparison pairs
@@ -632,8 +634,8 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
         ['Away to Away', 'Away to Home'],
         ['Home to Away', 'Home to Home (no Rest)'],
         ['Away to Away', 'Home to Home (no Rest)'],
-        ['Home to Away', 'Home to Home (with Rest)'],
-        ['Away to Away', 'Home to Home (with Rest)']
+        ['Home to Away', 'Home to Home (Rest)'],
+        ['Away to Away', 'Home to Home (Rest)']
     ];
 
     // Build comparison stats for display
@@ -712,10 +714,33 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
         if (travelType.includes('Rest Day (Away)')) return 'travel-rest-day-away';
         if (travelType.includes('Rest Day (Home)')) return 'travel-rest-day-home';
         if (travelType === 'Home to Home (no Rest)') return 'travel-home-to-home-no-rest';
-        if (travelType === 'Home to Home (with Rest)') return 'travel-home-to-home-with-rest';
+        if (travelType === 'Home to Home (Rest)') return 'travel-home-to-home-with-rest';
         if (travelType === 'Away to Home') return 'travel-away-to-home';
         if (travelType.includes('Rest Day (First Game)')) return 'travel-rest-day-first';
         return 'travel-unknown';
+    };
+
+    const handleFetchOdds = async () => {
+        if (!displayedGames || displayedGames.length === 0) return;
+        const picks = displayedGames.map(game => ({
+            gamePk: game.gamePk,
+            homeTeam: { name: game.isHome ? game.team : game.opponent },
+            awayTeam: { name: game.isHome ? game.opponent : game.team },
+            gameTime: game.gameTime || '',
+            gameDate: game.date ? `${game.date}T00:00:00` : undefined
+        }));
+        const odds = await fetchOdds(picks);
+        setOddsData(odds);
+    };
+
+    const getGameOdds = (game) => {
+        if (!game || !game.gamePk || !oddsData[game.gamePk]) return '';
+        const gameOdds = oddsData[game.gamePk];
+        const homeName = game.isHome ? game.team : game.opponent;
+        if (gameOdds.homeTeam.name === homeName) {
+            return formatOdds(gameOdds.homeTeam.odds);
+        }
+        return '';
     };
 
     return (
@@ -927,7 +952,7 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
                                                                         className="team-logo"
                                                                     />
                                                                     <span className={`team-name team-${homeTeamId} home-team`}>
-                                                                        {homeTeamName}
+                                                                        {homeTeamName} {getGameOdds(game)}
                                                                     </span>
                                                                     <span className="team-travel-label">
                                                                         {homeTravelType}
@@ -962,6 +987,9 @@ function TrendsTab({ trendsData, seasonTravelGames, loading, seasonYear, handleS
                         </div>
                     )}
 
+                    <button className="refresh-button" onClick={handleFetchOdds}>
+                        Fetch Odds
+                    </button>
 
                 </>
             )}

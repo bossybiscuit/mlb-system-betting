@@ -18,12 +18,14 @@ const Navigation = () => {
             <div className="nav-header">
                 <div className="nav-title">
                     <h1>MLB System Betting</h1>
-                    <p>Tracking systems to profit</p>
+                    <p>Tracking systems to the profitland.</p>
                 </div>
                 <div className="nav-profile">
-                    <button className="profile-button">
-                        <i className="fas fa-user"></i>
-                    </button>
+                    <NavLink to="/settings">
+                        <button className="profile-button">
+                            <i className="fas fa-user"></i>
+                        </button>
+                    </NavLink>
                 </div>
             </div>
 

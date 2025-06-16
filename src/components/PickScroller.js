@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './PickScroller.css';
+import { fetchOdds, formatOdds } from '../services/oddsApi';
 
 // Helper function to get team logo URL
 const getTeamLogoUrl = (teamId) => {
@@ -101,6 +102,26 @@ const getTeamColor = (teamId) => {
 };
 
 function PickScroller({ picks, loading }) {
+    const [oddsData, setOddsData] = useState({});
+
+    const handleFetchOdds = async () => {
+        if (!picks || picks.length === 0) return;
+        const odds = await fetchOdds(picks);
+        setOddsData(odds);
+    };
+
+    const getPickOdds = (pick) => {
+        if (!pick || !pick.gamePk || !oddsData[pick.gamePk]) return '';
+        const gameOdds = oddsData[pick.gamePk];
+        const teamName = pick.recommendedBet;
+        if (gameOdds.homeTeam.name === teamName) {
+            return formatOdds(gameOdds.homeTeam.odds);
+        } else if (gameOdds.awayTeam.name === teamName) {
+            return formatOdds(gameOdds.awayTeam.odds);
+        }
+        return '';
+    };
+
     if (loading) {
         return <div className="pick-scroller-loading">Loading picks...</div>;
     }
@@ -120,8 +141,9 @@ function PickScroller({ picks, loading }) {
             <div className="pick-scroller-header-container">
                 <div className="pick-scroller-header">
                     <h3>Today's Travel Picks</h3>
-                    <button className="clear-filter-button" onClick={() => {}}>
-                        Clear Filters
+
+                    <button className="refresh-button" onClick={handleFetchOdds}>
+                        Fetch Odds
                     </button>
                 </div>
             </div>
@@ -141,9 +163,9 @@ function PickScroller({ picks, loading }) {
                         return (
                             <div key={pick.gamePk} className="pick-scroller-card">
                                 <div className="pick-card-header">
-                                    <div className="recommended-bet-highlight-header">
-                                        <strong>Pick:</strong> {pick.recommendedBet || "Unknown"}
-                                    </div>
+                                <div className="recommended-bet-highlight-header">
+                                    {pick.recommendedBet} ({getPickOdds(pick)})
+                                </div>
                                     <div className="strategy-icon travel-advantage" title="Travel Advantage">
                                         ✈️
                                     </div>
