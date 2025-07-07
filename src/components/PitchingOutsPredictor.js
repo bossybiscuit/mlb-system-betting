@@ -48,7 +48,7 @@ function PitchingOutsPredictor() {
                             processedPredictions.push(prediction);
                         }
                     } catch (error) {
-                        console.error(`Error processing game ${game.gamePk}:`, error);
+                        console.error(`Error processing game ${game.gamePk}:`, error.message || JSON.stringify(error));
                     }
                 }
 
@@ -59,8 +59,8 @@ function PitchingOutsPredictor() {
                 setPredictions([]);
             }
         } catch (error) {
-            console.error('Error fetching pitching predictions:', error);
-            setError("Error fetching prediction data. Please try again later.");
+            console.error('Error fetching pitching predictions:', error.message || JSON.stringify(error));
+            setError(error.message || JSON.stringify(error));
         } finally {
             setLoading(false);
         }
@@ -281,7 +281,7 @@ function PitchingOutsPredictor() {
                 pitcherStats: pitcherStats
             };
         } catch (error) {
-            console.error(`Error processing pitcher ${pitcher.fullName}:`, error);
+            console.error(`Error processing pitcher ${pitcher.fullName}:`, error.message || JSON.stringify(error));
             return null;
         }
     };
@@ -343,7 +343,7 @@ function PitchingOutsPredictor() {
             console.log(`No season stats found for pitcher ${pitcherId}`);
             return null;
         } catch (error) {
-            console.error(`Error fetching pitcher stats for ${pitcherId}:`, error);
+            console.error(`Error fetching pitcher stats for ${pitcherId}:`, error.message || JSON.stringify(error));
             return null;
         }
     };
@@ -423,7 +423,7 @@ function PitchingOutsPredictor() {
             };
 
         } catch (error) {
-            console.error(`Error fetching team stats for ${teamId}:`, error);
+            console.error(`Error fetching team stats for ${teamId}:`, error.message || JSON.stringify(error));
             // Return league averages as fallback
             return {
                 avg: 0.250,
@@ -539,7 +539,7 @@ function PitchingOutsPredictor() {
                 marketType: 'estimated'
             };
         } catch (error) {
-            console.error('Error finding betting line:', error);
+            console.error('Error finding betting line:', error.message || JSON.stringify(error));
             return {
                 line: 15.5,
                 overOdds: -110,

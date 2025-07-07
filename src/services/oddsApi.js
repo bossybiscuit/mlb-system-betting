@@ -77,8 +77,8 @@ export const fetchOdds = async (picks) => {
         });
         return oddsMap;
     } catch (error) {
-        console.error('Error fetching odds:', error);
-        return {};
+        console.error('Error fetching odds:', error.message || JSON.stringify(error));
+        return { error: error.message || JSON.stringify(error) };
     }
 };
 

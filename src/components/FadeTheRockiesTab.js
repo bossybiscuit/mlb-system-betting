@@ -50,8 +50,8 @@ function FadeTheRockiesTab() {
                 setError("No game data available");
             }
         } catch (error) {
-            console.error('Error fetching MLB data:', error);
-            setError("Error fetching game data. Please try again later.");
+            console.error('Error fetching MLB data:', error.message || JSON.stringify(error));
+            setError(error.message || JSON.stringify(error));
         } finally {
             setLoading(false);
         }
@@ -78,7 +78,7 @@ function FadeTheRockiesTab() {
                 processHistoricalData(response.data.dates);
             }
         } catch (error) {
-            console.error('Error fetching historical MLB data:', error);
+            console.error('Error fetching historical MLB data:', error.message || JSON.stringify(error));
         } finally {
             setLoading(false);
         }

@@ -17,6 +17,7 @@ import PitchingOutsPredictor from './components/PitchingOutsPredictor';
 import Navigation from './components/Navigation';
 import ProtectedRoute from './components/ProtectedRoute';
 import UserSettings from './pages/UserSettings';
+import { fetchKRateUndersOpportunities } from './services/krateUnders';
 
 // Create a wrapper component for the main app content
 function MainApp() {
@@ -63,6 +64,7 @@ function MainApp() {
       'Home to Home (with Rest)': { wins: 0, losses: 0, total: 0, percentage: 0 },
     }
   });
+  const [krateUndersPicks, setKrateUndersPicks] = useState([]);
 
   // Constants
   const ROCKIES_TEAM_ID = 115; // MLB API ID for Colorado Rockies
@@ -106,49 +108,39 @@ function MainApp() {
     try {
       const today = new Date();
       const startDateForPicks = format(today, 'yyyy-MM-dd');
-
       console.log("Fetching picks for date:", startDateForPicks);
-
       // Fetch data for today's games
       const response = await axios.get(
         `https://statsapi.mlb.com/api/v1/schedule?startDate=${startDateForPicks}&endDate=${startDateForPicks}&sportId=1&hydrate=team,venue,game(content(summary)),linescore,seriesStatus`
       );
-
       if (response.data && response.data.dates && response.data.dates.length > 0) {
         const dateData = response.data.dates[0];
-
         // Look back 7 days to get context for today's games
         const lookbackStartDate = format(subDays(today, 7), 'yyyy-MM-dd');
         const lookbackResponse = await axios.get(
           `https://statsapi.mlb.com/api/v1/schedule?startDate=${lookbackStartDate}&endDate=${startDateForPicks}&sportId=1&hydrate=team,venue,game(content(summary)),linescore,seriesStatus`
         );
-
         // Process previous games to get context
         const teamLastGame = getTeamLastGames(7, lookbackResponse.data.dates || []);
-
         // Get the picks for each strategy
         const travelPicks = findTravelPicksOfTheDay(dateData, teamLastGame);
-
         // Use improved sweep picks function
         const sweepPicks = findImprovedSweepPicksOfTheDay(dateData, lookbackResponse.data.dates || []);
-
         const rockiesPicks = findRockiesPicksOfTheDay(dateData);
-
         // Log for debugging
         console.log("Travel Picks Found:", travelPicks.length, travelPicks);
         console.log("Sweep Picks Found:", sweepPicks.length, sweepPicks);
         console.log("Rockies Picks Found:", rockiesPicks.length, rockiesPicks);
-
         // Ensure we're setting the picks with proper structure
         const picks = {
           travel: Array.isArray(travelPicks) ? travelPicks : [],
           sweep: Array.isArray(sweepPicks) ? sweepPicks : [],
           rockies: Array.isArray(rockiesPicks) ? rockiesPicks : []
         };
-
-        // Update state with found picks
         setPicksOfTheDay(picks);
-
+        // Fetch K-Rate Unders picks
+        const krateUnders = await fetchKRateUndersOpportunities();
+        setKrateUndersPicks(Array.isArray(krateUnders) ? krateUnders : []);
         // Also make sure we have stats data by fetching season data if needed
         if (!seasonStats.byType ||
           Object.values(seasonStats.byType).every(stat => stat.total === 0)) {
@@ -162,6 +154,7 @@ function MainApp() {
           sweep: [],
           rockies: []
         });
+        setKrateUndersPicks([]);
       }
     } catch (error) {
       console.error('Error fetching picks of the day:', error);
@@ -170,6 +163,7 @@ function MainApp() {
         sweep: [],
         rockies: []
       });
+      setKrateUndersPicks([]);
     } finally {
       setPicksLoading(false);
     }
@@ -998,6 +992,7 @@ function MainApp() {
                   'Home to Home (with Rest)': { wins: 0, losses: 0, total: 0, percentage: 0 },
                 }
               }}
+              krateUndersPicks={krateUndersPicks}
               refreshAll={refreshAll}
             />
           } />

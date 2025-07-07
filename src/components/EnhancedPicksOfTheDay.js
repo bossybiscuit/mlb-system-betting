@@ -8,7 +8,8 @@ function EnhancedPicksOfTheDay({
     trendsData,
     seasonStats,
     scheduleData,
-    refreshAll
+    refreshAll,
+    krateUndersPicks
 }) {
     const [expandedPick, setExpandedPick] = useState(null);
     const [sortedPicks, setSortedPicks] = useState({
@@ -554,6 +555,105 @@ function EnhancedPicksOfTheDay({
         );
     };
 
+    // Render a K-Rate Unders pick card
+    const renderKRateUndersCard = (opportunity) => {
+        if (!opportunity) return null;
+        const awayTeamLogo = getTeamLogoUrl(opportunity.awayTeam.id);
+        const homeTeamLogo = getTeamLogoUrl(opportunity.homeTeam.id);
+        // Use the same structure and classes as KRateUndersTab.js
+        return (
+            <div className={`opportunity-card ${opportunity.confidence.toLowerCase()}-confidence`} key={opportunity.gamePk}>
+                <div className="opportunity-header">
+                    <div className="game-date">
+                        {opportunity.date ? new Date(opportunity.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : ''}
+                    </div>
+                    <div className="confidence-indicator">
+                        <span className={`confidence-badge ${opportunity.confidence.toLowerCase()}`}>{opportunity.confidence}</span>
+                    </div>
+                </div>
+                <div className="opportunity-matchup">
+                    <div className="pitcher-info away">
+                        <img
+                            src={awayTeamLogo}
+                            alt={`${opportunity.awayTeam.name} logo`}
+                            className="team-logo"
+                        />
+                        <div className="team-pitcher">
+                            <span className="team-name away">{opportunity.awayTeam.name}</span>
+                            <span className="pitcher-name-large">{opportunity.awayTeam.pitcher.name}</span>
+                            <div className={`pitcher-krate ${opportunity.awayTeam.pitcher.kRate >= 0.30 ? 'very-high-krate' :
+                                    opportunity.awayTeam.pitcher.kRate >= 0.27 ? 'high-krate' : ''
+                                } ${opportunity.awayTeam.pitcher.useSeasonStats ? 'season-stats' : ''} ${opportunity.awayTeam.pitcher.gamesCount < 3 ? 'limited-data' : ''}`}>
+                                {opportunity.awayTeam.pitcher.kRate && !isNaN(opportunity.awayTeam.pitcher.kRate) ?
+                                    `${(opportunity.awayTeam.pitcher.kRate * 100).toFixed(1)}% K-Rate` :
+                                    'K-Rate Data N/A'
+                                }
+                                {opportunity.awayTeam.pitcher.useSeasonStats && (
+                                    <span className="data-quality-indicator season" title="Using season stats">S</span>
+                                )}
+                                {opportunity.awayTeam.pitcher.gamesCount < 3 && !opportunity.awayTeam.pitcher.useSeasonStats && (
+                                    <span className="data-quality-indicator limited" title="Limited recent data">!</span>
+                                )}
+                            </div>
+                        </div>
+                        <div className="team-so-rate">
+                            Opponent SO Rate: {(opportunity.homeTeam.strikeoutRate * 100).toFixed(1)}%
+                        </div>
+                        {opportunity.awayTeam.pitcher.gamesCount > 0 && (
+                            <div className="pitcher-recent-data">
+                                {opportunity.awayTeam.pitcher.useSeasonStats ? 'Season stats' : `Last ${opportunity.awayTeam.pitcher.gamesCount} games`}
+                            </div>
+                        )}
+                    </div>
+                    <div className="vs-indicator">@</div>
+                    <div className="pitcher-info home">
+                        <img
+                            src={homeTeamLogo}
+                            alt={`${opportunity.homeTeam.name} logo`}
+                            className="team-logo"
+                        />
+                        <div className="team-pitcher">
+                            <span className="team-name home">{opportunity.homeTeam.name}</span>
+                            <span className="pitcher-name-large">{opportunity.homeTeam.pitcher.name}</span>
+                            <div className={`pitcher-krate ${opportunity.homeTeam.pitcher.kRate >= 0.30 ? 'very-high-krate' :
+                                    opportunity.homeTeam.pitcher.kRate >= 0.27 ? 'high-krate' : ''
+                                } ${opportunity.homeTeam.pitcher.useSeasonStats ? 'season-stats' : ''} ${opportunity.homeTeam.pitcher.gamesCount < 3 ? 'limited-data' : ''}`}>
+                                {(opportunity.homeTeam.pitcher.kRate * 100).toFixed(1)}% K-Rate
+                                {opportunity.homeTeam.pitcher.useSeasonStats && (
+                                    <span className="data-quality-indicator season" title="Using season stats">S</span>
+                                )}
+                                {opportunity.homeTeam.pitcher.gamesCount < 3 && !opportunity.homeTeam.pitcher.useSeasonStats && (
+                                    <span className="data-quality-indicator limited" title="Limited recent data">!</span>
+                                )}
+                            </div>
+                        </div>
+                        <div className="team-so-rate">
+                            Opponent SO Rate: {(opportunity.awayTeam.strikeoutRate * 100).toFixed(1)}%
+                        </div>
+                        {opportunity.homeTeam.pitcher.gamesCount > 0 && (
+                            <div className="pitcher-recent-data">
+                                {opportunity.homeTeam.pitcher.useSeasonStats ? 'Season stats' : `Last ${opportunity.homeTeam.pitcher.gamesCount} games`}
+                            </div>
+                        )}
+                    </div>
+                </div>
+                <div className="opportunity-details">
+                    <div className={`recommendation-tag confidence-${opportunity.confidence.toLowerCase()}`}>
+                        Recommended Under Bet ({opportunity.confidence} Confidence)
+                    </div>
+                    <div className="betting-lines">
+                        <div>Projected Total: 8.5 runs</div>
+                        <div>Projected F5: 4.5 runs</div>
+                    </div>
+                </div>
+                <div className="opportunity-footer">
+                    <span className="venue">{opportunity.venue}</span>
+                    <span className="game-time">{opportunity.gameTime}</span>
+                </div>
+            </div>
+        );
+    };
+
     // SINGLE RETURN STATEMENT FOR THE COMPONENT
     return (
         <div className="enhanced-picks-container">
@@ -563,16 +663,59 @@ function EnhancedPicksOfTheDay({
                     <button className="refresh-button copy-button" onClick={() => {
                         let message = "MLB System Betting Picks\n\n";
 
-                        // Add travel picks if available
-                        if (sortedPicks.travel && sortedPicks.travel.length > 0) {
-                            message += "**Travel Picks:**\n";
-                            sortedPicks.travel.forEach(pick => {
-                                message += `${pick.recommendedBet || "Unknown"}\n`;
+                        // 1. List all travel type records
+                        if (seasonStats && seasonStats.byType) {
+                            message += "**Travel Picks:**\n\n";
+                            Object.entries(seasonStats.byType).forEach(([type, stats]) => {
+                                message += `${type} [${stats.wins}-${stats.losses}]\n`;
                             });
+                            message += "\n";
                         }
 
+                        // 2. Group today's travel picks by matchup type
+                        const matchupGroups = {};
+                        sortedPicks.travel.forEach(pick => {
+                            const homeType = pick.homeTravelType;
+                            const awayType = pick.awayTravelType;
+                            const matchupKey = `${awayType} vs ${homeType}`;
+                            if (!matchupGroups[matchupKey]) matchupGroups[matchupKey] = [];
+                            matchupGroups[matchupKey].push(pick);
+                        });
+
+                        // 3. Output 'Home to Away vs Away to Home' first if present
+                        const specialMatchup = 'Home to Away vs Away to Home';
+                        if (matchupGroups[specialMatchup]) {
+                            const picks = matchupGroups[specialMatchup];
+                            const [awayType, homeType] = specialMatchup.split(' vs ');
+                            const awayStats = seasonStats?.byType?.[awayType] || { wins: 0, losses: 0 };
+                            const homeStats = seasonStats?.byType?.[homeType] || { wins: 0, losses: 0 };
+                            message += `${awayType} [${awayStats.wins}-${awayStats.losses}] vs ${homeType} [${homeStats.wins}-${homeStats.losses}]:\n`;
+                            picks.forEach(pick => {
+                                const awayOdds = oddsData[pick.gamePk]?.awayTeam ? formatOdds(oddsData[pick.gamePk].awayTeam.odds) : '';
+                                const homeOdds = oddsData[pick.gamePk]?.homeTeam ? formatOdds(oddsData[pick.gamePk].homeTeam.odds) : '';
+                                message += `${pick.awayTeam?.name || "Away"} [${awayOdds}] @ ${pick.homeTeam?.name || "Home"} [${homeOdds}]\n`;
+                            });
+                            message += "\n";
+                            delete matchupGroups[specialMatchup];
+                        }
+
+                        // 4. Output the rest of the matchups
+                        Object.entries(matchupGroups).forEach(([matchupKey, picks]) => {
+                            const [awayType, homeType] = matchupKey.split(' vs ');
+                            const awayStats = seasonStats?.byType?.[awayType] || { wins: 0, losses: 0 };
+                            const homeStats = seasonStats?.byType?.[homeType] || { wins: 0, losses: 0 };
+                            message += `${awayType} [${awayStats.wins}-${awayStats.losses}] vs ${homeType} [${homeStats.wins}-${homeStats.losses}]:\n`;
+                            picks.forEach(pick => {
+                                const awayOdds = oddsData[pick.gamePk]?.awayTeam ? formatOdds(oddsData[pick.gamePk].awayTeam.odds) : '';
+                                const homeOdds = oddsData[pick.gamePk]?.homeTeam ? formatOdds(oddsData[pick.gamePk].homeTeam.odds) : '';
+                                message += `${pick.awayTeam?.name || "Away"} [${awayOdds}] @ ${pick.homeTeam?.name || "Home"} [${homeOdds}]\n`;
+                            });
+                            message += "\n";
+                        });
+
+                        // 5. Fade the Sweep picks
+                        message += "Fade The Sweep Picks:\n\n";
                         if (sortedPicks.sweep && sortedPicks.sweep.length > 0) {
-                            message += "\n**Fade the Sweep Picks:**\n";
                             sortedPicks.sweep.forEach(pick => {
                                 message += `${pick.recommendedBet || "Unknown"}\n`;
                             });
@@ -584,9 +727,6 @@ function EnhancedPicksOfTheDay({
                             .catch(err => console.error("Failed to copy: ", err));
                     }}>
                         Copy Picks
-                    </button>
-                    <button className="refresh-button" onClick={refreshAll}>
-                        Refresh Data
                     </button>
                     <button className="refresh-button" onClick={handleFetchOdds}>
                         Fetch Odds
@@ -629,8 +769,14 @@ function EnhancedPicksOfTheDay({
 
                     {/* K-Rate Unders Row */}
                     <div className="pick-row">
-                        <h3>K-Rate Unders (0)</h3>
-                        <div className="no-picks">No K-Rate Under picks available for today.</div>
+                        <h3>K-Rate Unders ({krateUndersPicks?.length || 0})</h3>
+                        {krateUndersPicks && krateUndersPicks.length > 0 ? (
+                            <div className="picks-list">
+                                {krateUndersPicks.map(opportunity => renderKRateUndersCard(opportunity))}
+                            </div>
+                        ) : (
+                            <div className="no-picks">No K-Rate Under picks available for today.</div>
+                        )}
                     </div>
 
                     {/* Pitching Out Projections Row */}

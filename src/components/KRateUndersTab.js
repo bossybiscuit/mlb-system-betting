@@ -69,8 +69,8 @@ function KRateUndersTab() {
                 setKrateOpportunities([]);
             }
         } catch (error) {
-            console.error('Error fetching current K-Rate data:', error);
-            setError("Error fetching game data. Please try again later.");
+            console.error('Error fetching current K-Rate data:', error.message || JSON.stringify(error));
+            setError(error.message || JSON.stringify(error));
         } finally {
             setLoading(false);
         }
@@ -170,7 +170,7 @@ function KRateUndersTab() {
                 await new Promise(resolve => setTimeout(resolve, 50));
 
             } catch (error) {
-                console.error(`Error processing game ${game.gamePk}:`, error);
+                console.error(`Error processing game ${game.gamePk}:`, error.message || JSON.stringify(error));
             }
         }
 
@@ -260,7 +260,7 @@ function KRateUndersTab() {
                 gamesCount: 0
             };
         } catch (error) {
-            console.error(`Error fetching pitcher stats for ${pitcherId}:`, error);
+            console.error(`Error fetching pitcher stats for ${pitcherId}:`, error.message || JSON.stringify(error));
             return {
                 kRate: 0,
                 totalStrikeouts: 0,
@@ -348,7 +348,7 @@ function KRateUndersTab() {
             // Return league average as fallback (approximately 22.5% based on recent MLB averages)
             return 0.225;
         } catch (error) {
-            console.error(`Error fetching team strikeout rate for ${teamId}:`, error);
+            console.error(`Error fetching team strikeout rate for ${teamId}:`, error.message || JSON.stringify(error));
             // Return league average as fallback
             return 0.225;
         }
@@ -377,7 +377,7 @@ function KRateUndersTab() {
             calculateHistoricalStats(historicalData);
 
         } catch (error) {
-            console.error(`Error fetching historical K-Rate data for ${season}:`, error);
+            console.error(`Error fetching historical K-Rate data for ${season}:`, error.message || JSON.stringify(error));
         } finally {
             setLoading(false);
         }
@@ -473,18 +473,12 @@ function KRateUndersTab() {
                                         wasUnderF5: estimatedF5Runs < ASSUMED_F5_TOTAL,
                                         venue: game.venue.name
                                     });
-
-                                    // Limit total results for performance
-                                    if (historicalData.length >= 50) {
-                                        console.log(`Reached limit of ${historicalData.length} historical K-Rate games`);
-                                        return historicalData.sort((a, b) => new Date(b.date) - new Date(a.date));
-                                    }
                                 }
                             }
                         }
                     }
                 } catch (chunkError) {
-                    console.error(`Error fetching historical chunk:`, chunkError);
+                    console.error(`Error fetching historical chunk:`, chunkError.message || JSON.stringify(chunkError));
                 }
 
                 // Move to next chunk
@@ -496,7 +490,7 @@ function KRateUndersTab() {
             }
 
         } catch (error) {
-            console.error('Error in fetchRealHistoricalData:', error);
+            console.error('Error in fetchRealHistoricalData:', error.message || JSON.stringify(error));
         }
 
         console.log(`Found ${historicalData.length} real historical K-Rate opportunities`);
@@ -540,7 +534,7 @@ function KRateUndersTab() {
             console.log(`No season stats found for pitcher ${pitcherId}`);
             return { kRate: 0, totalStrikeouts: 0, totalBattersFaced: 0, actualKs: 0 };
         } catch (error) {
-            console.error(`Error fetching season stats for pitcher ${pitcherId}:`, error);
+            console.error(`Error fetching season stats for pitcher ${pitcherId}:`, error.message || JSON.stringify(error));
             return { kRate: 0, totalStrikeouts: 0, totalBattersFaced: 0, actualKs: 0 };
         }
     };

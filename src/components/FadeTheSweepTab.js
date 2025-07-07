@@ -66,9 +66,9 @@ function FadeTheSweepTab() {
                 debugLog.push("No game data available in response");
             }
         } catch (error) {
-            console.error('Error fetching MLB data:', error);
-            setError("Error fetching game data. Please try again later.");
-            debugLog.push(`Error: ${error.message}`);
+            console.error('Error fetching MLB data:', error.message || JSON.stringify(error));
+            setError(error.message || JSON.stringify(error));
+            debugLog.push(`Error: ${error.message || JSON.stringify(error)}`);
         } finally {
             setLoading(false);
             setDebugInfo(debugLog);
